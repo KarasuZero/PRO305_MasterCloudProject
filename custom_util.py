@@ -40,3 +40,4 @@ def keyGen():
 def check_if_username_exists(username):
     dynamodb = bt3.resource('dynamodb')
     Registerd_User_Table = dynamodb.Table("PRO305_Registered_User_Table")
+    # check if username exist in table

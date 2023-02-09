@@ -1,0 +1,9 @@
+{
+  "operation": "POST_Register_User",
+  "data": {
+    "username": "user_01",
+    "password": "root",
+    "name" : "bobu",
+    "email" : "test@email.com"
+  }
+}
