@@ -1,6 +1,10 @@
 {
   "operation": "POST_Create_Proprietor",
   "data":{
-    
+    "username": "owner_01",
+    "password": "root",
+    "name": "bobu",
+    "email": "test@email.com",
+    "phone": "1234567890"
   }
 }

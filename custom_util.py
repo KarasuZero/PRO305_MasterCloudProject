@@ -39,5 +39,28 @@ def keyGen():
 
 def check_if_username_exists(username):
     dynamodb = bt3.resource('dynamodb')
-    Registerd_User_Table = dynamodb.Table("PRO305_Registered_User_Table")
+    Registered_User_Table = dynamodb.Table("PRO305_Registered_User_Table")
     # check if username exist in table
+    try:
+        response = Registered_User_Table.get_item(Key={'username': username})
+        if 'Item' in response:
+            return True
+        else:
+            return False
+
+    except Exception as e:
+        return False
+
+
+data = {
+  "operation": "POST_Create_Proprietor",
+  "data":{
+    "username": "owner_01",
+    "password": "root",
+    "name": "bobu",
+    "email": "test@email.com",
+    "phone": "1234567890"
+  }
+}
+
+print(b64Encode(json.dumps(data)))
