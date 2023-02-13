@@ -51,10 +51,19 @@ def check_if_username_exists(username):
     except Exception as e:
         return False
 
+def get_all_content_from_table(table_Name):
+    dynamodb = bt3.resource('dynamodb')
+    table = dynamodb.Table(table_Name)
+
+    response = table.scan()
+
+    return response['Items']
+
+
 
 data = {
   "operation": "POST_Create_Proprietor",
-  "data":{
+  "data": {
     "username": "owner_01",
     "password": "root",
     "name": "bobu",
