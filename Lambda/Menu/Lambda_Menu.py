@@ -195,26 +195,3 @@ def delete_menu(data):
     body = {"message": "Menu Deleted"}
     
     return cu.create_response(200, cu.json.dumps(body))
-
-    
-    
-    
-
-
-
-    
-        
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    

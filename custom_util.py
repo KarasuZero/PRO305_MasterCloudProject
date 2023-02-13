@@ -52,58 +52,99 @@ def check_if_username_exists(username):
     except Exception as e:
         return False
 
+
+def check_is_user(username, password):
+    dynamodb = bt3.resource('dynamodb')
+    User_Table = dynamodb.Table("PRO305_User_Table")
+    # check if user exist in table
+    try:
+        response = User_Table.get_item(Key={'username': username})
+        if 'Item' in response:
+            if response['Item']['password'] == password:
+                return True
+            else:
+                return False
+        else:
+            return False
+
+    except Exception as e:
+        return False
+
+
+def check_if_user_is_proprietor(username):
+    dynamodb = bt3.resource('dynamodb')
+    Registered_User_Table = dynamodb.Table("PRO305_Registered_User_Table")
+    # check if user exist in table
+    try:
+        response = Registered_User_Table.get_item(Key={'username': username})
+
+        if 'Item' in response:
+
+            # check if user is proprietor
+            if response['Item']['role'] == 'PROPRIETOR':
+                return True
+            else:
+                return False
+        else:
+            return False
+
+    except Exception as e:
+        return False
+
+def check_if_store_exists(store_name):
+    dynamodb = bt3.resource('dynamodb')
+    Store_Table = dynamodb.Table("PRO305_Store_Table")
+    # check if store exist in table
+    try:
+        response = Store_Table.get_item(Key={'storename': store_name})
+        if 'Item' in response:
+            return True
+        else:
+            return False
+
+    except Exception as e:
+        return False
+
+def check_if_user_is_owner(username, store_name):
+    dynamodb = bt3.resource('dynamodb')
+    Store_Table = dynamodb.Table("PRO305_Store_Table")
+    # check if store exist in table
+    try:
+        response = Store_Table.get_item(Key={'storename': store_name})
+        if 'Item' in response:
+            if response['Item']['proprietor'] == username:
+                return True
+            else:
+                return False
+        else:
+            return False
+
+    except Exception as e:
+        return False
+
 def get_all_content_from_table(table_Name):
     dynamodb = bt3.resource('dynamodb')
     table = dynamodb.Table(table_Name)
 
     response = table.scan()
 
-    return response['Items']
+    return response.get('Items', [])
 
 
-
+# json data to be sent to lambda
 data = {
-  "operation": "POST_Create_Proprietor",
-  "data": {
-    "username": "owner_01",
-    "password": "root",
-    "name": "bobu",
-    "email": "test@email.com",
-    "phone": "1234567890"
-  }
+
 }
 
-# Menu test json
-dataMenuGet = {
-    "operation": "GET_Menu",
-    "data": {
-        "id": "your id string here"
-    }
-}
+# data encoded using base64
+print("encoded data:\n")
+print(b64Encode(json.dumps(data)))
 
-dataCreateMenu = { 
-    "operation": "POST_Create_Menu",
-    "data": {
-        "items": [
-            {
-                "item_id": "item_01",
-                "name": "Hamburger",
-                "price": "5.99",
-                "description": "A delicious hamburger"
-            },
-            {
-                "item_id": "item_02",
-                "name": "Cheeseburger",
-                "price": "6.99",
-                "description": "A delicious cheeseburger"
-            }
-        ]
-    }
-}
-                
-        
+# data decoded using base64 ( debug )
+# print("decoded data:\n")
+# print(b64Decode(b64Encode(json.dumps(data))))
 
+# retrieving data from dynamodb
+table_name = "PRO305_Registered_User_Table"
+print(get_all_content_from_table(table_name))
 
-
-
-print(b64Encode(json.dumps(dataCreateMenu)))

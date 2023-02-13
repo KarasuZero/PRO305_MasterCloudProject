@@ -17,6 +17,7 @@ def lambda_handler(event, context):
         return post_register_proprietor(data)
 
 
+
 def post_register_user(data):
     username = data['username']
     email = data['email']
@@ -65,9 +66,7 @@ def post_register_proprietor(data):
     # TODO verify email format
 
     # check if username exists
-    exist = cu.check_if_username_exists(username)
-
-    if exist:
+    if cu.check_if_username_exists(username):
         # generating response
         return cu.create_response(400, "Username already exists")
 

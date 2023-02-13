@@ -1,0 +1,10 @@
+{
+  "operation": "PATCH_Transfer_Ownership",
+  "data": {
+    "username": "owner_01",
+    "password": "root",
+    "newowner": "owner_02",
+    "newownerpassword": "root",
+    "storename": "Test Store"
+  }
+}

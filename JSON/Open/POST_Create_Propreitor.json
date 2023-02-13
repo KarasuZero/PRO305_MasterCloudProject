@@ -1,5 +1,5 @@
 {
-  "operation": "POST_Create_Proprietor",
+  "operation": "POST_Register_Proprietor",
   "data":{
     "username": "owner_01",
     "password": "root",
