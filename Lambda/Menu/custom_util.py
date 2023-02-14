@@ -129,24 +129,58 @@ dataCreateMenu2 = {
     }
 }
 
-#edit price of rybeye steak
+# edit price of rybeye steak
 dataEditMenuItem = {
     "operation": "PUT_Edit_Menu_Item",
     "data": {
         "menu_id": "b349d688-7710-474e-9686-52ae8f67317b",
         "item_id": "e7e022eb-6d2d-40c2-8c86-58966ca73889",
-        "price": "24.99" #this sheiz expensive
+        "name": "Ribeye Steak",
+        "description": "A delicious Ribeye Steak"
     }
 }
-    
+
+dataGetMenuItem = {
+    "operation": "GET_Get_Menu_Item",
+    "data": {
+        "menu_id": "b349d688-7710-474e-9686-52ae8f67317b",
+        "item_id": "e7e022eb-6d2d-40c2-8c86-58966ca73889"
+    }
+}
+
+dataAddMenuItem = {
+    "operation": "PUT_Add_Menu_Item",
+    "data": {
+        "menu_id": "570a76f6-b324-4b74-91d0-4bdfe952d119",
+        "item_id": "item_03",
+        "name": "French Fries",
+        "price": "2.99",
+        "description": "A delicious French Fries"
+    }
+}
+
+dataDeleteMenuItem = {
+    "operation": "PUT_Delete_Menu_Item",
+    "data": {
+        "menu_id": "570a76f6-b324-4b74-91d0-4bdfe952d119",
+        "item_id": "item_03"
+
+    }
+}
 
 
 # print(b64Encode(json.dumps(dataCreateMenu)))
 
 # print(b64Encode(json.dumps(dataDeleteMenu)))
 
-#print(b64Encode(json.dumps(dataMenuGet)))
+# print(b64Encode(json.dumps(dataMenuGet)))
 
-#print(b64Encode(json.dumps(dataCreateMenu2)))
+# print(b64Encode(json.dumps(dataCreateMenu2)))
 
-#print(b64Encode(json.dumps(dataEditMenuItem)))
+# print(b64Encode(json.dumps(dataEditMenuItem)))
+
+# print(b64Encode(json.dumps(dataGetMenuItem)))
+
+print(b64Encode(json.dumps(dataAddMenuItem)))
+
+#print(b64Encode(json.dumps(dataDeleteMenuItem)))
