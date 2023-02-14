@@ -17,7 +17,6 @@ def lambda_handler(event, context):
         return post_register_proprietor(data)
 
 
-
 def post_register_user(data):
     username = data['username']
     email = data['email']
@@ -59,6 +58,7 @@ def post_register_user(data):
         # TODO send email content to message queue? and then let the email service handle it?
 
         return cu.create_response(200, cu.json.dumps(body))
+
 
 def post_register_proprietor(data):
     username = data['username']
@@ -107,7 +107,8 @@ def post_register_proprietor(data):
         })
 
         # generating response
-        body = {"message": "Proprietor Created", "username": username, "password": password, "name": name, "phone": phone}
+        body = {"message": "Proprietor Created", "username": username, "password": password, "name": name,
+                "phone": phone}
         # TODO send email content to message queue? and then let the email service handle it?
 
         return cu.create_response(200, cu.json.dumps(body))

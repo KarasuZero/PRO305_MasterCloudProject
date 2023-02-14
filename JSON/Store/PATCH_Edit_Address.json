@@ -1,0 +1,11 @@
+{
+  "operation": "PATCH_Edit_Store_Name",
+  "data": {
+    "username": "owner_01",
+    "password": "root",
+    "store_name": "Test Store",
+    "new_city": "New City",
+    "new_state": "New State",
+    "new_zip": "11111"
+  }
+}

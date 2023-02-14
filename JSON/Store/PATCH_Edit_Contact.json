@@ -1,0 +1,9 @@
+{
+  "operation": "PATCH_Edit_Contact",
+  "data": {
+    "username": "owner_01",
+    "password": "root",
+    "store_name": "Test Store",
+    "new_phone": "222-333-4444"
+  }
+}

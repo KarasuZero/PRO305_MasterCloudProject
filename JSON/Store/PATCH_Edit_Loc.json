@@ -1,0 +1,9 @@
+{
+  "operation": "PATCH_Edit_Location",
+  "data": {
+    "username": "owner_01",
+    "password": "root",
+    "store_name": "Test Store",
+    "new_loc": "test new location"
+  }
+}

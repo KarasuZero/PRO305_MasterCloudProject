@@ -3,7 +3,7 @@
   "data": {
     "username": "user_01",
     "password": "root",
-    "storename": "Test Store",
+    "store_name": "Test Store",
     "description": "Test Store Description",
     "location": "Test Store Location",
     "city": "Test City",

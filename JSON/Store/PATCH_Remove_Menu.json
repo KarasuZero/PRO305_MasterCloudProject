@@ -1,0 +1,8 @@
+{
+  "operation": "POST_Remove_Menu",
+  "data": {
+    "username": "owner_01",
+    "password": "root",
+    "menu_id": "menu_01"
+  }
+}

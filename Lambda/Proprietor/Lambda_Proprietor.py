@@ -1,7 +1,7 @@
 import custom_util as cu
 
-def lambda_handler(event, context):
 
+def lambda_handler(event, context):
     # grab body and do b64 stuff
     decoded_body = cu.b64Decode(event['body'])
     loaded_body = cu.json.loads(decoded_body)
@@ -12,17 +12,16 @@ def lambda_handler(event, context):
 
     # passing data to the correct method base on op
     if operation == "POST_Create_Store":
-        return POST_Create_Store(data)
+        return post_create_store(data)
 
     elif operation == "DELETE_Delete_Store":
-        return DELETE_Delete_Store(data)
+        return delete_store(data)
 
     elif operation == "PATCH_Transfer_Ownership":
-        return PATCH_Transfer_Ownership(data)
+        return patch_transfer_ownership(data)
 
 
-def POST_Create_Store(data):
-
+def post_create_store(data):
     username = data['username']
 
     # check if username exists
@@ -34,10 +33,10 @@ def POST_Create_Store(data):
             password = data['password']
 
             # validate user
-            if cu.check_is_user(username,password):
+            if cu.check_is_user(username, password):
 
                 # check if store exists
-                store_name = data['storename']
+                store_name = data['store_name']
 
                 if cu.check_if_store_exists(store_name):
 
@@ -55,7 +54,7 @@ def POST_Create_Store(data):
                     loc = data['location']
                     city = data['city']
                     state = data['state']
-                    zip = data['zip']
+                    zipcode = data['zipcode']
                     phone = data['phone']
                     email = data['email']
                     website = data['website']
@@ -63,24 +62,24 @@ def POST_Create_Store(data):
 
                     # inserting into Store_Table
                     Store_Table.put_item(Item={
-                        "storename": store_name,
+                        "store_name": store_name,
                         "description": des,
                         "location": loc,
                         "city": city,
                         "state": state,
-                        "zip": zip,
+                        "zipcode": zipcode,
                         "phone": phone,
                         "email": email,
                         "website": website,
                         "hours": hours,
-                        "menu": [],
+                        "menu_list": [],
                         "proprietor": username
                     })
 
                     # inserting into Proprietor_Table
                     Proprietor_Table = dynamodb.Table('PRO305_Proprietor_Table')
                     Proprietor_Table.update_item(
-                        Key={'username': username,'password': password},
+                        Key={'username': username, 'password': password},
                         UpdateExpression="SET properties = list_append(properties, :i)",
                         ExpressionAttributeValues={
                             ':i': [store_name]
@@ -88,7 +87,7 @@ def POST_Create_Store(data):
                     )
 
                     # generating response
-                    body = {"message": "Store Created", "storename": store_name}
+                    body = {"message": "Store Created", "store_name": store_name}
                     return cu.create_response(200, body)
 
             else:
@@ -103,14 +102,15 @@ def POST_Create_Store(data):
         # generating response
         return cu.create_response(400, "User does not exist")
 
-def DELETE_Delete_Store(data):
+
+def delete_store(data):
     username = data['username']
 
     # check if username exists
     if cu.check_if_username_exists(username):
 
         # check if store exists
-        store_name = data['storename']
+        store_name = data['store_name']
         if cu.check_if_store_exists(store_name):
 
             # check if user is the owner of the store
@@ -124,12 +124,12 @@ def DELETE_Delete_Store(data):
                     Store_Table = dynamodb.Table('PRO305_Store_Table')
 
                     # deleting store from Store_Table
-                    Store_Table.delete_item(Key={'storename': store_name})
+                    Store_Table.delete_item(Key={'store_name': store_name})
 
                     # deleting store from Proprietor_Table
                     Proprietor_Table = dynamodb.Table('PRO305_Proprietor_Table')
                     Proprietor_Table.update_item(
-                        Key={'username': username,'password': password},
+                        Key={'username': username, 'password': password},
                         UpdateExpression="REMOVE properties[0]",
                         ConditionExpression="contains(properties, :i)",
                         ExpressionAttributeValues={
@@ -138,7 +138,7 @@ def DELETE_Delete_Store(data):
                     )
 
                     # generating response
-                    body = {"message": "Store Deleted", "storename": store_name}
+                    body = {"message": "Store Deleted", "store_name": store_name}
                     return cu.create_response(200, body)
 
                 else:
@@ -157,18 +157,18 @@ def DELETE_Delete_Store(data):
         # generating response
         return cu.create_response(400, "User does not exist")
 
-def PATCH_Transfer_Ownership(data):
 
+def patch_transfer_ownership(data):
     username = data['username']
 
     # check if username exists
     if cu.check_if_username_exists(username):
 
         # check if user is the owner of the store
-        store_name = data['storename']
+        store_name = data['store_name']
         if cu.check_if_user_is_owner(username, store_name):
 
-            new_owner = data['newowner']
+            new_owner = data['new_owner']
 
             # check if new owner exists
             if cu.check_if_username_exists(new_owner):
@@ -181,7 +181,7 @@ def PATCH_Transfer_Ownership(data):
 
                         # check password
                         password = data['password']
-                        new_owner_password = data['newownerpassword']
+                        new_owner_password = data['new_owner_password']
 
                         # check new owner password
                         if cu.check_is_user(new_owner, new_owner_password):
@@ -195,7 +195,7 @@ def PATCH_Transfer_Ownership(data):
 
                                 # updating store in Store_Table
                                 Store_Table.update_item(
-                                    Key={'storename': store_name},
+                                    Key={'store_name': store_name},
                                     UpdateExpression="SET proprietor = :i",
                                     ExpressionAttributeValues={
                                         ':i': new_owner
@@ -221,7 +221,7 @@ def PATCH_Transfer_Ownership(data):
                                 )
 
                                 # generating response
-                                body = {"message": "Store ownership transfered", "storename": store_name}
+                                body = {"message": "Store ownership transferred", "store_name": store_name}
                                 return cu.create_response(200, body)
 
                             else:
@@ -248,5 +248,3 @@ def PATCH_Transfer_Ownership(data):
     else:
         # generating response
         return cu.create_response(400, "User does not exist")
-
-

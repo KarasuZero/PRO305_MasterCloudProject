@@ -1,0 +1,9 @@
+{
+  "operation": "PATCH_Edit_Store_Name",
+  "data": {
+    "username": "owner_01",
+    "password": "root",
+    "store_name": "Test Store",
+    "new_store_name": "New Store Name"
+  }
+}

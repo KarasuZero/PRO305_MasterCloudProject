@@ -1,0 +1,9 @@
+{
+  "operation": "PATCH_Edit_Website",
+  "data": {
+    "username": "owner_01",
+    "password": "root",
+    "store_name": "Test Store",
+    "new_website": "www.new-website.com"
+  }
+}

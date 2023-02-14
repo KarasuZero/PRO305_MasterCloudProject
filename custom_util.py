@@ -27,16 +27,13 @@ def keyGen():
 
     Key = ""
 
-
     for i in range(12):
-
         Chars.append(ran.choice(Characters))
-
 
         Key = "".join(Chars)
 
-
     return Key
+
 
 def check_if_username_exists(username):
     dynamodb = bt3.resource('dynamodb')
@@ -91,6 +88,7 @@ def check_if_user_is_proprietor(username):
     except Exception as e:
         return False
 
+
 def check_if_store_exists(store_name):
     dynamodb = bt3.resource('dynamodb')
     Store_Table = dynamodb.Table("PRO305_Store_Table")
@@ -104,6 +102,7 @@ def check_if_store_exists(store_name):
 
     except Exception as e:
         return False
+
 
 def check_if_user_is_owner(username, store_name):
     dynamodb = bt3.resource('dynamodb')
@@ -122,13 +121,49 @@ def check_if_user_is_owner(username, store_name):
     except Exception as e:
         return False
 
-def get_all_content_from_table(table_Name):
+
+def get_all_content_from_table(table_name):
     dynamodb = bt3.resource('dynamodb')
-    table = dynamodb.Table(table_Name)
+    table = dynamodb.Table(table_name)
 
     response = table.scan()
 
     return response.get('Items', [])
+
+
+def check_if_menu_exists(menu_id):
+    dynamodb = bt3.resource('dynamodb')
+    Menu_Table = dynamodb.Table("PRO305_Menu_Table")
+    # check if menu exist in table
+    try:
+        response = Menu_Table.get_item(Key={'menu_id': menu_id})
+        if 'Item' in response:
+            return True
+        else:
+            return False
+
+    except Exception as e:
+        return False
+
+
+def check_if_menu_in_store(menu_id, store_name):
+    dynamodb = bt3.resource('dynamodb')
+    Store_Table = dynamodb.Table("PRO305_Store_Table")
+
+    # check if store exist in table
+    try:
+        response = Store_Table.get_item(Key={'storename': store_name})
+        if 'Item' in response:
+            temp_list = response['Item']['menu_list']
+            if menu_id in temp_list:
+                return True
+            else:
+                return False
+        else:
+            return False
+
+    except Exception as e:
+        return False
 
 
 # json data to be sent to lambda
@@ -143,8 +178,3 @@ print(b64Encode(json.dumps(data)))
 # data decoded using base64 ( debug )
 # print("decoded data:\n")
 # print(b64Decode(b64Encode(json.dumps(data))))
-
-# retrieving data from dynamodb
-table_name = "PRO305_Registered_User_Table"
-print(get_all_content_from_table(table_name))
-
