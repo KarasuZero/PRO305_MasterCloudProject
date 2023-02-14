@@ -31,22 +31,20 @@ def lambda_handler(event, context):
     data = loaded_body['data']
     
     #passing data to the correct method base on op
-    if operation == "PATCH_Edit_Menu_Item":
-        return patch_edit_menu_item(data)
-    if operation == "POST_Create_Menu":
+    if operation == "PUT_Edit_Menu_Item":
+        return put_edit_menu_item(data) #if you use put you do not have to do a patch for each attribute you can replace the whole item
+    if operation == "POST_Create_Menu": #works
         return post_create_menu(data) 
     if operation == "GET_Get_Menu_Item":
         return get_menu_item(data)
-    if operation == "GET_Get_Menu":
+    if operation == "GET_Get_Menu": #works
         return get_menu(data)
     if operation == "PUT_Add_Menu_Item":
         return put_add_menu_item(data)
-    if operation == "DELETE_Delete_Menu_Item":
-        return delete_menu_item(data)
-    if operation == "DELETE_Delete_Menu":
+    if operation == "PATCH_Delete_Menu_Item":
+        return patch_delete_menu_item(data)
+    if operation == "DELETE_Delete_Menu": #works
         return delete_menu(data)
-    if operation == "GET_Get_All_Menus":
-        return cu.get_all_content_from_table("PRO305_Menu_Table")
     
    # elif operation == "DELETE_Delete_Menu_Item":
        # return delete_menu_item(data)
@@ -56,56 +54,54 @@ def get_menu(data):
     Menu_Table = dynamodb.Table('PRO305_Menu_Table')
     
     #grabbing data
-    id = data['id']
+    id = data['menu_id']
     
     #find menu by id
-    menu = Menu_Table.get_item(Key={'id': id})
+    menu = Menu_Table.get_item(Key={'menu_id': id})
     if menu is None:
         return cu.create_response(400, "Menu Not Found")
     #generate response
     body = {"message": "Menu Found" , "data": menu}
     
     return cu.create_response(200, cu.json.dumps(body))
-def patch_edit_menu_item(data):
+def put_edit_menu_item(data):
     dynamodb = cu.bt3.resource("dynamodb")
     Menu_Table = dynamodb.Table('PRO305_Menu_Table')
     
     #grabbing data
-    id = data['id']
+    id = data['menu_id']
     item_id = data['item_id']
-    name = data['name']
-    price = data['price']
-    description = data['description']
+    #if data exsit grab it if not set it to none
+    if 'name' in data:
+        name = data['name']
+    else:
+        name = None
+    if 'price' in data:
+        price = data['price']
+    else:
+        price = None
+    if 'description' in data:
+        description = data['description']
+    else:
+        description = None
     
-    #find menu by id and retreive item to be edited
-    menu = Menu_Table.get_item(Key={'id': id, 'item_id': item_id})
-    
-    #edit item
-    if name is not None:
-        menu['name'] = name
-    if price is not None:
-        menu['price'] = price
-    if description is not None:
-        menu['description'] = description
-    
+    #get menu from menu table find the item within the items array and update it
+    menu = Menu_Table.get_item(Key={'menu_id': id})
+    if menu is None:
+        return cu.create_response(400, "Menu Not Found")
+    for item in menu['items']:
+        if item['item_id'] == item_id:
+            if name is not None or name != "":
+                item['name'] = name
+            if price is not None or price != "":                        
+                item['price'] = price
+            if description is not None or description != "":
+                item['description'] = description
+        elif item['item_id'] != item_id:
+            return cu.create_response(400, "Item Not Found")
                 
-    #update item object in menu table
-    Menu_Table.update_menu( 
-        Key={'id': id},
-        UpdateExpression="set items = :i",
-        ExpressionAttributeValues={
-            ':i': menu['items']
-        }
-    )
-    
-    #this is code i researched and found online, i will test it later
-    Menu_Table.update_item(
-        Key={'id': id, 'item_id': item_id},
-        UpdateExpression= "set items = :i",
-        ExpressionAttributeValues={
-            ':i': menu
-        }    
-    )
+    #update 
+    Menu_Table.put_item(Item=menu)
     #update item
     body = {"message": "Menu Item Updated" , "data": menu}
     
@@ -116,17 +112,15 @@ def post_create_menu(data):
     
     #grabbing data
     id = str(uuid4())
-    item_id = str(uuid4())
+    data['menu_id'] = id
     items = data['items']
+    
+    #for each item in items array add item_id
+    for item in items:
+        item_id = str(uuid4())
+        item['item_id'] = item_id
     #insert into Menu_Table
-    Menu_Table.put_item(Item={
-        "id": id,
-        "items": [
-            {
-                "item_id": item_id
-            }
-        ]
-    })
+    Menu_Table.put_item(Item=data)
     
     body = {"message": "Menu Created" , "data": data}
     
@@ -137,9 +131,20 @@ def get_menu_item(data):
     Menu_Table = dynamodb.Table('PRO305_Menu_Table')
     
     #grabbing data
-    id = data['id']
+    id = data['menu_id']
     item_id = data['item_id']
-    body = Menu_Table.get_item(Key={'id': id, 'item_id': item_id})
+    #check if menu exists
+    menu = Menu_Table.get_item(Key={'menu_id': id})
+    if menu is None:
+        return cu.create_response(400, "Menu Not Found")
+    #find item in menu
+    for item in menu['items']:
+        if item['item_id'] == item_id:
+            body = {"message": "Menu Item Found" , "data": item}
+            return cu.create_response(200, cu.json.dumps(body))
+        elif item['item_id'] != item_id:
+            return cu.create_response(400, "Item Not Found")
+    
     return cu.create_response(200, cu.json.dumps(body))
 
 
@@ -148,7 +153,7 @@ def put_add_menu_item(data):
     Menu_Table = dynamodb.Table('PRO305_Menu_Table')
     
     #grabbing data
-    id = data['id']
+    id = data['menu_id']
     item_id = data['item_id']
     name = data['name']
     price = data['price']
@@ -157,7 +162,7 @@ def put_add_menu_item(data):
     
     #find menu by id
     Menu_Table = dynamodb.Table('PRO305_Menu_Table')
-    menu = Menu_Table.get_item(Key={'id': id})
+    menu = Menu_Table.get_item(Key={'menu_id': id})
     #add item to menu
     menu['items'].append({
         "item_id": item_id,
@@ -167,30 +172,34 @@ def put_add_menu_item(data):
     })
     
     body = {"message": menu}
+    
+    Menu_Table.put_item(Item=menu)
     return cu.create_response(200, cu.json.dumps(body))
-def delete_menu_item(data):
+def patch_delete_menu_item(data):
     dynamodb = cu.bt3.resource("dynamodb")
     Menu_Table = dynamodb.Table('PRO305_Menu_Table')
-    
-    #grabbing data
-    id = data['id']
     item_id = data['item_id']
+    id = data['menu_id']
+    # remove item from menu table inside of items array
+    Menu_Table.update_item(
+        Key={'menu_id': id},
+        UpdateExpression="REMOVE items[0]",
+        CobditionExpression="items[0].item_id = :item_id",
+        ExpressionAttributeValues={
+            ':item_id': item_id
+        }
     
-    #find menu by id
-    response = Menu_Table.delete_item(Key={'id': id, 'item_id': item_id})
-    
-    body = {"message": "Menu Item Deleted", "data": response}
-    
-    return cu.create_response(200, cu.json.dumps(body))
+    )
+    return cu.create_response(200, "Menu Item Deleted")
 def delete_menu(data):
     dynamodb = cu.bt3.resource("dynamodb")
     Menu_Table = dynamodb.Table('PRO305_Menu_Table')
     
     #grabbing data
-    id = data['id']
+    id = data['menu_id']
     
     #delete menu
-    Menu_Table.delete_item(Key={'id': id})
+    Menu_Table.delete_item(Key={'menu_id': id})
     
     body = {"message": "Menu Deleted"}
     

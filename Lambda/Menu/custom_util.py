@@ -27,16 +27,14 @@ def keyGen():
 
     Key = ""
 
-
     for i in range(12):
 
         Chars.append(ran.choice(Characters))
 
-
         Key = "".join(Chars)
 
-
     return Key
+
 
 def check_if_username_exists(username):
     dynamodb = bt3.resource('dynamodb')
@@ -52,6 +50,7 @@ def check_if_username_exists(username):
     except Exception as e:
         return False
 
+
 def get_all_content_from_table(table_Name):
     dynamodb = bt3.resource('dynamodb')
     table = dynamodb.Table(table_Name)
@@ -61,29 +60,29 @@ def get_all_content_from_table(table_Name):
     return response['Items']
 
 
-
 data = {
-  "operation": "POST_Create_Proprietor",
-  "data": {
-    "username": "owner_01",
-    "password": "root",
-    "name": "bobu",
-    "email": "test@email.com",
-    "phone": "1234567890"
-  }
+    "operation": "POST_Create_Proprietor",
+    "data": {
+        "username": "owner_01",
+        "password": "root",
+        "name": "bobu",
+        "email": "test@email.com",
+        "phone": "1234567890"
+    }
 }
 
 # Menu test json
 dataMenuGet = {
-    "operation": "GET_Menu",
+    "operation": "GET_Get_Menu",
     "data": {
-        "id": "your id string here"
+        "menu_id": "b349d688-7710-474e-9686-52ae8f67317b"
     }
 }
 
-dataCreateMenu = { 
+dataCreateMenu = {
     "operation": "POST_Create_Menu",
     "data": {
+        "menu_id": "menu_id",
         "items": [
             {
                 "item_id": "item_01",
@@ -100,10 +99,54 @@ dataCreateMenu = {
         ]
     }
 }
-                
-        
+
+dataDeleteMenu = {
+    "operation": "DELETE_Delete_Menu",
+    "data": {
+        "menu_id": "temp",
+    }
+}
 
 
+dataCreateMenu2 = {
+    "operation": "POST_Create_Menu",
+    "data": {
+        "menu_id": "menu_id",
+        "items": [
+            {
+                "item_id": "item_01",
+                "name": "Ribeye Steak",
+                "price": "19.99",
+                "description": "A delicious Ribeye Steak"
+            },
+            {
+                "item_id": "item_02",
+                "name": "Chicken Breast",
+                "price": "12.99",
+                "description": "A delicious Chicken Breast"
+            }
+        ]
+    }
+}
+
+#edit price of rybeye steak
+dataEditMenuItem = {
+    "operation": "PUT_Edit_Menu_Item",
+    "data": {
+        "menu_id": "b349d688-7710-474e-9686-52ae8f67317b",
+        "item_id": "e7e022eb-6d2d-40c2-8c86-58966ca73889",
+        "price": "24.99" #this sheiz expensive
+    }
+}
+    
 
 
-print(b64Encode(json.dumps(dataCreateMenu)))
+# print(b64Encode(json.dumps(dataCreateMenu)))
+
+# print(b64Encode(json.dumps(dataDeleteMenu)))
+
+#print(b64Encode(json.dumps(dataMenuGet)))
+
+#print(b64Encode(json.dumps(dataCreateMenu2)))
+
+#print(b64Encode(json.dumps(dataEditMenuItem)))
