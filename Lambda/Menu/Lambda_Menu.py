@@ -23,41 +23,49 @@ from uuid import uuid4
 
 
 def lambda_handler(event, context):
-    # decode b64
-    decoded_body = cu.b64Decode(event['body'])
-    loaded_body = cu.json.loads(decoded_body)
+    
+    if event['body'] == "":
+        operation = event['queryStringParameters']['operation']
+        
+        if operation == "GET_Get_Menu_Item":  # works
+            return get_menu_item(event['queryStringParameters']['menu_id'], event['queryStringParameters']['item_id'])
+        elif operation == "GET_Get_Menu":  # works
+            return get_menu(event['queryStringParameters']['menu_id'])
+    
+    
+    
+    
+    if event['queryStringParameters'] == {}:
+        # decode b64
+        decoded_body = cu.b64Decode(event['body'])
+        loaded_body = cu.json.loads(decoded_body)
 
-    # grabbing operation and data
-    operation = loaded_body['operation']
-    data = loaded_body['data']
+        # grabbing operation and data
+        operation = loaded_body['operation']
+        data = loaded_body['data']
 
-    # passing data to the correct method base on op
-    if operation == "PUT_Edit_Menu_Item":  # works
-        return put_edit_menu_item(
-            data)  # if you use put you do not have to do a patch for each attribute you can replace the whole item
-    elif operation == "POST_Create_Menu":  # works
-        return post_create_menu(data)
-    elif operation == "GET_Get_Menu_Item":  # works
-        return get_menu_item(data)
-    elif operation == "GET_Get_Menu":  # works
-        return get_menu(data)
-    elif operation == "PUT_Add_Menu_Item":  # works
-        return put_add_menu_item(data)
-    elif operation == "PUT_Delete_Menu_Item":  # works
-        return put_delete_menu_item(data)
-    elif operation == "DELETE_Delete_Menu":  # works
-        return delete_menu(data)
+        # passing data to the correct method base on op
+        if operation == "PUT_Edit_Menu_Item":  # works
+            return put_edit_menu_item(data)  # if you use put you do not have to do a patch for each attribute you can replace the whole item
+        elif operation == "POST_Create_Menu":  # works
+            return post_create_menu(data)
+        elif operation == "PUT_Add_Menu_Item":  # works
+            return put_add_menu_item(data)
+        elif operation == "PUT_Delete_Menu_Item":  # works
+            return put_delete_menu_item(data)
+        elif operation == "DELETE_Delete_Menu":  # works
+            return delete_menu(data)
 
 
-def get_menu(data):
+def get_menu(menu_id):
     dynamodb = cu.bt3.resource("dynamodb")
     Menu_Table = dynamodb.Table('PRO305_Menu_Table')
 
     # grabbing data
-    id = data['menu_id']
+    
 
     # find menu by id
-    menu = Menu_Table.get_item(Key={'menu_id': id})
+    menu = Menu_Table.get_item(Key={'menu_id': menu_id})
     if menu is None:
         return cu.create_response(400, "Menu Not Found")
     # generate response
@@ -129,15 +137,13 @@ def post_create_menu(data):
     return cu.create_response(200, cu.json.dumps(body))
 
 
-def get_menu_item(data):
+def get_menu_item(menu_id, item_id):
     dynamodb = cu.bt3.resource("dynamodb")
     Menu_Table = dynamodb.Table('PRO305_Menu_Table')
 
-    # grabbing data
-    id = data['menu_id']
-    item_id = data['item_id']
+    # grabbing data]
     # check if menu exists
-    menu = Menu_Table.get_item(Key={'menu_id': id})['Item']
+    menu = Menu_Table.get_item(Key={'menu_id': menu_id})['Item']
     if menu is None:
         return cu.create_response(400, "Menu Not Found")
     # find item in menu
