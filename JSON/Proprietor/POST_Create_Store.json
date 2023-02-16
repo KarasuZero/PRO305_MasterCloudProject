@@ -1,14 +1,14 @@
 {
   "operation": "POST_Create_Store",
   "data": {
-    "username": "user_01",
+    "username": "owner_01",
     "password": "root",
     "store_name": "Test Store",
-    "description": "Test Store Description",
+    "desc": "Test Store Description",
     "location": "Test Store Location",
     "city": "Test City",
     "state": "Test State",
-    "zip": "11111",
+    "zipcode": "11111",
     "phone": "1112223333",
     "email": "store@test.com",
     "website": "www.testStore.com",

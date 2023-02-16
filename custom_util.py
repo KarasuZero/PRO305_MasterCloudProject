@@ -47,24 +47,55 @@ def check_if_username_exists(username):
             return False
 
     except Exception as e:
+        print("error: ")
+        print(e)
         return False
 
 
 def check_is_user(username, password):
     dynamodb = bt3.resource('dynamodb')
+    Registered_User_Table = dynamodb.Table("PRO305_Registered_User_Table")
     User_Table = dynamodb.Table("PRO305_User_Table")
+    Proprietor_Table = dynamodb.Table("PRO305_Proprietor_Table")
     # check if user exist in table
     try:
-        response = User_Table.get_item(Key={'username': username})
+        response = Registered_User_Table.get_item(Key={'username': username})
         if 'Item' in response:
-            if response['Item']['password'] == password:
-                return True
-            else:
-                return False
+            if response['Item']['role'] == 'PROPRIETOR':
+                # check password
+                print("Proprietor")
+                try:
+                    response = Proprietor_Table.get_item(Key={'username': username, 'password': password})
+                    if 'Item' in response:
+                        return True
+                    else:
+                        return False
+
+                except Exception as e:
+                    print("error: ")
+                    print(e)
+                    return False
+
+            elif response['Item']['role'] == 'USER':
+                # check password
+                print("User")
+                try:
+                    response = User_Table.get_item(Key={'username': username, 'password': password})
+                    if 'Item' in response:
+                        return True
+                    else:
+                        return False
+
+                except Exception as e:
+                    print("error: ")
+                    print(e)
+                    return False
         else:
             return False
 
     except Exception as e:
+        print("error: ")
+        print(e)
         return False
 
 
@@ -86,6 +117,8 @@ def check_if_user_is_proprietor(username):
             return False
 
     except Exception as e:
+        print("error: ")
+        print(e)
         return False
 
 
@@ -94,13 +127,15 @@ def check_if_store_exists(store_name):
     Store_Table = dynamodb.Table("PRO305_Store_Table")
     # check if store exist in table
     try:
-        response = Store_Table.get_item(Key={'storename': store_name})
+        response = Store_Table.get_item(Key={'store_name': store_name})
         if 'Item' in response:
             return True
         else:
             return False
 
     except Exception as e:
+        print("error: ")
+        print(e)
         return False
 
 
@@ -109,7 +144,7 @@ def check_if_user_is_owner(username, store_name):
     Store_Table = dynamodb.Table("PRO305_Store_Table")
     # check if store exist in table
     try:
-        response = Store_Table.get_item(Key={'storename': store_name})
+        response = Store_Table.get_item(Key={'store_name': store_name})
         if 'Item' in response:
             if response['Item']['proprietor'] == username:
                 return True
@@ -119,6 +154,8 @@ def check_if_user_is_owner(username, store_name):
             return False
 
     except Exception as e:
+        print("error: ")
+        print(e)
         return False
 
 
@@ -143,6 +180,8 @@ def check_if_menu_exists(menu_id):
             return False
 
     except Exception as e:
+        print("error: ")
+        print(e)
         return False
 
 
@@ -152,7 +191,7 @@ def check_if_menu_in_store(menu_id, store_name):
 
     # check if store exist in table
     try:
-        response = Store_Table.get_item(Key={'storename': store_name})
+        response = Store_Table.get_item(Key={'store_name': store_name})
         if 'Item' in response:
             temp_list = response['Item']['menu_list']
             if menu_id in temp_list:
@@ -163,12 +202,69 @@ def check_if_menu_in_store(menu_id, store_name):
             return False
 
     except Exception as e:
+        print("error: ")
+        print(e)
+        return False
+
+def check_if_item_in_menu(menu_id, item_id):
+    # dynamodb stuff
+    dynamodb = bt3.resource('dynamodb')
+    Menu_Table = dynamodb.Table("PRO305_Menu_Table")
+
+    # check if menu exist in table
+    try:
+        response = Menu_Table.get_item(Key={'menu_id': menu_id})
+        if 'Item' in response:
+            item_list = response['Item']['items']
+            for item in item_list:
+                if item['item_id'] == item_id:
+                    return True
+
+                else:
+                    return False
+        else:
+            return False
+
+    except Exception as e:
+        print("error: ")
+        print(e)
+        return False
+
+def check_if_item_in_cart(username, password, item_id):
+    # dynamodb stuff
+    dynamodb = bt3.resource('dynamodb')
+    User_Table = dynamodb.Table("PRO305_User_Table")
+
+    # check if menu exist in table
+    try:
+        response = User_Table.get_item(Key={'username': username, "password": password})
+        if 'Item' in response:
+            item_list = response['Item']['Cart']
+            for item in item_list:
+                if item['item_id'] == item_id:
+                    return True
+
+                else:
+                    return False
+        else:
+            return False
+
+    except Exception as e:
+        print("error: ")
+        print(e)
         return False
 
 
 # json data to be sent to lambda
 data = {
-
+  "operation": "PATCH_Modify_Cart",
+  "data":{
+    "username": "user_01",
+    "password": "user_01_pass",
+    "menu_id": "570a76f6-b324-4b74-91d0-4bdfe952d119",
+    "item_id": "1e60aea5-c71d-49ee-ac8a-97fb6d1cee69",
+    "quantity": "-3"
+  }
 }
 
 # data encoded using base64
@@ -176,5 +272,5 @@ print("encoded data:\n")
 print(b64Encode(json.dumps(data)))
 
 # data decoded using base64 ( debug )
-# print("decoded data:\n")
+# print("decoded data:\n")user
 # print(b64Decode(b64Encode(json.dumps(data))))

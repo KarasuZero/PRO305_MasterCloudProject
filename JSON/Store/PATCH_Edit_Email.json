@@ -1,9 +1,9 @@
 {
-  "operation": "PATCH_Edit_Contact",
+  "operation": "PATCH_Edit_Email",
   "data": {
     "username": "owner_01",
     "password": "root",
     "store_name": "Test Store",
-    "new_phone": "222-333-4444"
+    "new_email": "new@email.com"
   }
 }

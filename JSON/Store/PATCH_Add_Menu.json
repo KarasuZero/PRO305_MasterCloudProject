@@ -1,8 +1,9 @@
 {
-  "operation": "POST_Add_Menu",
+  "operation": "PATCH_Add_Menu",
   "data": {
     "username": "owner_01",
     "password": "root",
-    "menu_id": "menu_01"
+    "store_name": "Test Store",
+    "menu_id": "570a76f6-b324-4b74-91d0-4bdfe952d119"
   }
 }

@@ -1,8 +1,8 @@
 {
-  "operation": "DELETE_Delete_store",
+  "operation": "DELETE_Delete_Store",
   "data": {
     "username": "owner_01",
     "password": "root",
-    "storeName": "Test Store"
+    "store_name": "Test Store"
   }
 }

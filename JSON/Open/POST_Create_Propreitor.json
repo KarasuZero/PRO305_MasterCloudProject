@@ -1,7 +1,7 @@
 {
   "operation": "POST_Register_Proprietor",
   "data":{
-    "username": "owner_01",
+    "username": "owner01",
     "password": "root",
     "name": "bobu",
     "email": "test@email.com",

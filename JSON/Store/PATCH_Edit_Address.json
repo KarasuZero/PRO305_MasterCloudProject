@@ -1,5 +1,5 @@
 {
-  "operation": "PATCH_Edit_Store_Name",
+  "operation": "PATCH_Edit_Address",
   "data": {
     "username": "owner_01",
     "password": "root",

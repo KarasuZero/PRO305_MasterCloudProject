@@ -64,9 +64,9 @@ def post_create_store(data):
                     Store_Table.put_item(Item={
                         "store_name": store_name,
                         "description": des,
-                        "location": loc,
+                        "loc": loc,
                         "city": city,
-                        "state": state,
+                        "st": state,
                         "zipcode": zipcode,
                         "phone": phone,
                         "email": email,

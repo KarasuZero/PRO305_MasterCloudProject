@@ -26,9 +26,6 @@ def lambda_handler(event, context):
     elif operation == "PATCH_Edit_Description":
         return patch_edit_des(data)
 
-    elif operation == "PATCH_Edit_Store_Name":
-        return patch_edit_store_name(data)
-
     elif operation == "PATCH_Edit_Address":
         return patch_edit_address(data)
 
@@ -107,7 +104,6 @@ def patch_add_menu(data):
         # generating response
         return cu.create_response(400, "Username does not exist")
 
-
 def patch_remove_menu(data):
     username = data['username']
 
@@ -173,7 +169,6 @@ def patch_remove_menu(data):
         # generating response
         return cu.create_response(400, "Username does not exist")
 
-
 def patch_edit_loc(data):
     username = data['username']
 
@@ -202,7 +197,7 @@ def patch_edit_loc(data):
                     # updating store
                     Store_Table.update_item(
                         Key={'store_name': store_name},
-                        UpdateExpression="set location = :l",
+                        UpdateExpression="set loc = :l",
                         ExpressionAttributeValues={
                             ':l': new_loc
                         }
@@ -330,63 +325,6 @@ def patch_edit_des(data):
         return cu.create_response(400, "Username does not exist")
 
 
-def patch_edit_store_name(data):
-    username = data['username']
-
-    # check if username exists
-    if cu.check_if_username_exists(username):
-
-        # check if store exists
-        store_name = data['store_name']
-
-        if cu.check_if_store_exists(store_name):
-
-            # check if user is the owner of the store
-            if cu.check_if_user_is_owner(username, store_name):
-
-                # check password
-                password = data['password']
-                if cu.check_is_user(username, password):
-
-                    # check if new store name exists
-                    new_store_name = data['new_store_name']
-
-                    if cu.check_if_store_exists(new_store_name):
-                        return cu.create_response(400, "Store name already exists")
-
-                    else:
-                        # insert into dynamodb
-                        dynamodb = cu.bt3.resource("dynamodb")
-                        Store_Table = dynamodb.Table('PRO305_Store_Table')
-
-                        # updating store
-                        Store_Table.update_item(
-                            Key={'store_name': store_name},
-                            UpdateExpression="set store_name = :s",
-                            ExpressionAttributeValues={
-                                ':s': new_store_name
-                            }
-                        )
-
-                        # updating store name in user table
-                        User_Table = dynamodb.Table('PRO305_User_Table')
-
-                else:
-                    # generating response
-                    return cu.create_response(400, "Password is incorrect")
-
-            else:
-                # generating response
-                return cu.create_response(400, "User is not the owner of the store")
-
-        else:
-            # generating response
-            return cu.create_response(400, "Store does not exist")
-    else:
-        # generating response
-        return cu.create_response(400, "Username does not exist")
-
-
 def patch_edit_address(data):
     username = data['username']
 
@@ -417,7 +355,7 @@ def patch_edit_address(data):
                     # updating store
                     Store_Table.update_item(
                         Key={'store_name': store_name},
-                        UpdateExpression="set city = :c, state = :s, zipcode = :z",
+                        UpdateExpression="set city = :c, st = :s, zipcode = :z",
                         ExpressionAttributeValues={
                             ':c': new_city,
                             ':s': new_state,
@@ -476,6 +414,8 @@ def patch_edit_contact(data):
                             ':p': new_phone
                         }
                     )
+
+                    return cu.create_response(200, "Store contact updated")
 
                 else:
                     # generating response
@@ -552,7 +492,7 @@ def patch_edit_website(data):
     if cu.check_if_username_exists(username):
 
         # check if store exists
-        store_name = data['storename']
+        store_name = data['store_name']
 
         if cu.check_if_store_exists(store_name):
 

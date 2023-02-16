@@ -1,0 +1,7 @@
+{
+  "operation": "POST_Get_Cart",
+  "data":{
+    "username": "user_01",
+    "password": "user_01_pass"
+  }
+}

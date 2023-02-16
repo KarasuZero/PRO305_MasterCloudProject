@@ -1,0 +1,10 @@
+{
+  "operation": "PATCH_Modify_Cart",
+  "data":{
+    "username": "user_01",
+    "password": "user_01_pass",
+    "menu_id": "570a76f6-b324-4b74-91d0-4bdfe952d119",
+    "item_id": "1e60aea5-c71d-49ee-ac8a-97fb6d1cee69",
+    "quantity": "2"
+  }
+}

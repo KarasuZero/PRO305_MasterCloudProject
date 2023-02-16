@@ -3,8 +3,8 @@
   "data": {
     "username": "owner_01",
     "password": "root",
-    "newowner": "owner_02",
-    "newownerpassword": "root",
-    "storename": "Test Store"
+    "new_owner": "owner01",
+    "new_owner_password": "root",
+    "store_name": "Test Store"
   }
 }

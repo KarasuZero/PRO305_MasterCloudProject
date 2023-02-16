@@ -1,7 +1,7 @@
 import custom_util as cu
 
 
-#Example regisred user table json
+# Example registered user table json
 # {
 #  username: "test",
 #  password: "test", #### im not sure if we want to store the password in the table
@@ -18,112 +18,212 @@ import custom_util as cu
 # }
 
 def lambda_handler(event, context):
-    # grab body and do b64 stuff
-    decoded_body = cu.b64Decode(event['body'])
-    loaded_body = cu.json.loads(decoded_body)
+    # check if body is empty
+    if event['body'] == "":
+        # grabbing op
+        operation = event['queryStringParameters']['operation']
 
-    # grabbing op and data
-    operation = loaded_body['operation']
-    data = loaded_body['data']
-    
-    if operation == "PUT_Add_To_Cart":
-        return put_add_to_cart(data)
-    if operation == "PUT_Remove_From_Cart":
-        return put_remove_from_cart(data)
-    if operation == "Get_Cart":
-        return get_cart(data)
-    
-    def put_add_to_cart (data):
-        # dynamodb stuff
-        dynamodb = cu.bt3.resource("dynamodb")
-        User_Table = dynamodb.Table('PRO305_Registered_User_Table')
-        Menu_Table = dynamodb.Table('PRO305_Menu_Table')
-        
-        # grabbing username and item
-        username = data['username']
-        menu_id = data['menu_id']
-        item_id = data['item_id']
-        item_found = False
-        
-        #check if item exists in menu
-        menu = Menu_Table.get_item(Key={'menu_id': menu_id})['Item']
-        if menu is None: 
-            return cu.create_response(400, "Menu does not exist")
-        #find item in menu
-        for item in menu['items']:
-            if item['item_id'] == item_id:
-                item_to_add = item
-                break
-        if item_to_add is None:
-            return cu.create_response(400, "Item does not exist")
-        #check if item is already in cart
-        user = User_Table.get_item(Key={'username': username})['Item']
-        for item in user['Cart']:
-            if item['item_id'] == item_id:
-                #increment quantity
-                item_found = True
-                item['quantity'] += 1
-                break
-        if not item_found:
-            #add item to cart
-            user['Cart'].append(item_to_add)
-        #update user table
-        User_Table.put_item(Item=user)
-        #generate response
-        return cu.create_response(200, cu.json.dumps(user['Cart']))
-    def put_remove_from_cart (data):
-        # dynamodb stuff
-        dynamodb = cu.bt3.resource("dynamodb")
-        User_Table = dynamodb.Table('PRO305_Registered_User_Table')
-        Menu_Table = dynamodb.Table('PRO305_Menu_Table')
-        
-        # grabbing username and item
-        username = data['username']
-        menu_id = data['menu_id']
-        item_id = data['item_id']
-        item_found = False
-        
-        #check if item exists in menu
-        menu = Menu_Table.get_item(Key={'menu_id': menu_id})['Item']
-        if menu is None: 
-            return cu.create_response(400, "Menu does not exist")
-        #find item in menu
-        for item in menu['items']:
-            if item['item_id'] == item_id:
-                item_to_remove = item
-                break
-        if item_to_remove is None:
-            return cu.create_response(400, "Item does not exist")
-        #check if item is already in cart
-        user = User_Table.get_item(Key={'username': username})['Item']
-        for item in user['Cart']:
-            if item['item_id'] == item_id:
-                #decrement quantity
-                item_found = True
-                item['quantity'] -= 1
-                if item['quantity'] == 0:
-                    user['Cart'].remove(item)
-                break
-        if not item_found:
-            #item not in cart
-            return cu.create_response(400, "Item not in cart")
-        #update user table
-        User_Table.put_item(Item=user)
-        #generate response
-        return cu.create_response(200, cu.json.dumps(user['Cart']))
-    def get_cart (data):
-        # dynamodb stuff
-        dynamodb = cu.bt3.resource("dynamodb")
-        User_Table = dynamodb.Table('PRO305_Registered_User_Table')
-        
-        # grabbing username
-        username = data['username']
-        
-        #check if user exists
-        user = User_Table.get_item(Key={'username': username})['Item']
-        if user is None: 
-            return cu.create_response(400, "User does not exist")
-        #generate response
-        return cu.create_response(200, cu.json.dumps(user['Cart']))
-               
-        
+        if operation == "GET_All_Store":
+            return get_all_store()
+
+        elif operation == "GET_Store":
+            return get_store(event['queryStringParameters']['store_name'])
+
+        elif operation == "GET_Menu_By_ID":
+            return get_menu_by_id(event['queryStringParameters']['menu_id'])
+
+        elif operation == "GET_Menu_By_Name":
+            return get_menu_by_name(event['queryStringParameters']['store_name'])
+
+    if event['queryStringParameters'] == {}:
+        # grab body and do b64 stuff
+        decoded_body = cu.b64Decode(event['body'])
+        loaded_body = cu.json.loads(decoded_body)
+
+        # grabbing op and data
+        operation = loaded_body['operation']
+        data = loaded_body['data']
+
+        if operation == "POST_Get_Cart":
+            return post_get_cart(data)
+        elif operation == "PATCH_Modify_Cart":
+            return patch_modify_cart(data)
+
+
+def get_all_store():
+    # dynamoDB stuff
+    DynamoDB = cu.bt3.resource("dynamodb")
+    Store_Table = DynamoDB.Table("PRO305_Store_Table")
+
+    # scan table
+    response = Store_Table.scan()
+
+    # grab items
+    items = response['Items']
+
+    # generate response
+    return cu.create_response(200, items)
+
+
+def get_store(store_name):
+    # dynamoDB stuff
+    DynamoDB = cu.bt3.resource("dynamodb")
+    Store_Table = DynamoDB.Table("PRO305_Store_Table")
+
+    # check if store exists
+    if cu.check_if_store_exists(store_name):
+        # get item
+        response = Store_Table.get_item(Key={'store_name': store_name})
+        item = response['Item']
+
+        # generate response
+        return cu.create_response(200, item)
+
+    else:
+        # generate response
+        return cu.create_response(400, "Store does not exist")
+
+
+def get_menu_by_id(menu_id):
+    # dynamoDB stuff
+    DynamoDB = cu.bt3.resource("dynamodb")
+    Menu_Table = DynamoDB.Table("PRO305_Menu_Table")
+
+    # check if menu exists
+    if cu.check_if_menu_exists(menu_id):
+        # get item
+        response = Menu_Table.get_item(Key={'menu_id': menu_id})
+        item = response['Item']
+
+        # generate response
+        return cu.create_response(200, item)
+
+    else:
+        # generate response
+        return cu.create_response(400, "Menu does not exist")
+
+
+def get_menu_by_name(store_name):
+    # dynamoDB stuff
+    DynamoDB = cu.bt3.resource("dynamodb")
+    Store_Table = DynamoDB.Table("PRO305_Store_Table")
+
+    # check if store exists
+    if cu.check_if_store_exists(store_name):
+        # get item
+        response = Store_Table.get_item(Key={'store_name': store_name})
+        item = response['Item']
+
+        new_list = []
+
+        # for each menu in menu_list
+        for menu_id in item['menu_list']:
+            new_list.append(get_menu_by_id(menu_id))
+
+        # generate response
+        return cu.create_response(200, new_list)
+
+    else:
+        # generate response
+        return cu.create_response(400, "Store does not exist")
+
+
+def post_get_cart(data):
+    username = data['username']
+    password = data['password']
+
+    # dynamoDB stuff
+    DynamoDB = cu.bt3.resource("dynamodb")
+    User_Table = DynamoDB.Table("PRO305_User_Table")
+
+    # check if user exists
+    if cu.check_if_username_exists(username):
+
+        # check password
+        if cu.check_is_user(username, password):
+            # get item
+            response = User_Table.get_item(Key={'username': username, 'password': password})
+            item = response['Item']
+
+            # generate response
+            return cu.create_response(200, item['Cart'])
+
+        else:
+            # generate response
+            return cu.create_response(400, "Password is incorrect")
+
+    else:
+        # generate response
+        return cu.create_response(400, "User does not exist")
+
+
+def patch_modify_cart(data):
+    username = data['username']
+    password = data['password']
+
+    # dynamoDB stuff
+    DynamoDB = cu.bt3.resource("dynamodb")
+    User_Table = DynamoDB.Table("PRO305_User_Table")
+
+    # check if user exists
+    if cu.check_if_username_exists(username):
+
+        if cu.check_is_user(username, password):
+            response = User_Table.get_item(Key={'username': username, 'password': password})
+            item = response['Item']
+
+
+            if not cu.check_if_item_in_cart(username, password, data['item_id']):
+                if int(data['quantity']) > 0:
+                    item = {
+                        "menu_id": data['menu_id'],
+                        "item_id": data['item_id'],
+                        "quantity": data['quantity']
+                    }
+
+                    # add item to Cart in User_Table
+                    User_Table.update_item(
+                        Key={'username': username, 'password': password},
+                        UpdateExpression="set Cart = list_append(Cart, :i)",
+                        ExpressionAttributeValues={
+                            ':i': [item]
+                        },
+                    )
+
+            else:
+
+                temp_list = item['Cart']
+                for product in temp_list:
+                    if product['item_id'] == data['item_id']:
+
+                        current_quantity = int(product['quantity'])
+                        new_quantity = current_quantity + int(data['quantity'])
+
+                        if new_quantity > 0:
+                            product['quantity'] = str(new_quantity)
+                        elif new_quantity <= 0:
+                            temp_list.remove(product)
+
+                User_Table.update_item(
+                    Key={'username': username, 'password': password},
+                    UpdateExpression="set Cart = :i",
+                    ExpressionAttributeValues={
+                        ':i': temp_list
+                    },
+                )
+
+            # generate response
+            response = User_Table.get_item(Key={'username': username, 'password': password})
+            item = response['Item']
+            cart = item['Cart']
+
+            body = {"Cart": cart, "message": "Item quantity updated" }
+            return cu.create_response(200, body)
+
+        else:
+            # generate response
+            return cu.create_response(400, "Password is incorrect")
+
+    else:
+        # generate response
+        return cu.create_response(400, "User does not exist")
