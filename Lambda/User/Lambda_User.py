@@ -18,6 +18,7 @@ import custom_util as cu
 # }
 
 def lambda_handler(event, context):
+
     # check if body is empty
     if event['body'] == "":
         # grabbing op
@@ -35,7 +36,7 @@ def lambda_handler(event, context):
         elif operation == "GET_Menu_By_Name":
             return get_menu_by_name(event['queryStringParameters']['store_name'])
 
-    if event['queryStringParameters'] == {}:
+    elif event['queryStringParameters'] == {} or event['queryStringParameters'].get('authorizationToken'):
         # grab body and do b64 stuff
         decoded_body = cu.b64Decode(event['body'])
         loaded_body = cu.json.loads(decoded_body)

@@ -32,10 +32,8 @@ def lambda_handler(event, context):
         elif operation == "GET_Get_Menu":  # works
             return get_menu(event['queryStringParameters']['menu_id'])
     
-    
-    
-    
-    if event['queryStringParameters'] == {}:
+
+    if event['queryStringParameters'] == {} or event['queryStringParameters'].get('authorizationToken'):
         # decode b64
         decoded_body = cu.b64Decode(event['body'])
         loaded_body = cu.json.loads(decoded_body)
