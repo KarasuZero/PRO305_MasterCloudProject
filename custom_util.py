@@ -284,6 +284,19 @@ def sqs_produce_msg(email, username, password, name):
     print("Sent to SQS")
     print(f"Sent message with ID: {res['MessageId']}")
 
+def return_user_role(username):
+
+    # dynamodb stuff
+    dynamodb = bt3.resource('dynamodb')
+    Register_Table = dynamodb.Table("PRO305_Register_Table")
+
+    response = Register_Table.get_item(Key={'username': username})
+    if 'Item' in response:
+        return response['Item']['role']
+    else:
+        return False
+
+
 
 def generate_ten_user():
     user_list = []

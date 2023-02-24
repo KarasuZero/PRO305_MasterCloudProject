@@ -19,6 +19,8 @@ def lambda_handler(event, context):
         return post_gen_ten_users()
     elif operation == "POST_validate_user":
         return post_validate_user(data)
+    elif operation == "POST_Return_User_Role":
+        return post_return_user_role(data)
 
 
 def post_register_user(data):
@@ -121,6 +123,7 @@ def post_register_proprietor(data):
 
         return cu.create_response(200, cu.json.dumps(body))
 
+
 def post_gen_ten_users():
     user_list = cu.generate_ten_user()
 
@@ -161,7 +164,6 @@ def post_gen_ten_users():
 
 
 def post_validate_user(data):
-
     # check if username exists
     if cu.check_if_username_exists(data['username']):
 
@@ -171,3 +173,18 @@ def post_validate_user(data):
 
         else:
             return cu.create_response(400, "Password is incorrect")
+
+
+def post_return_user_role(data):
+    # check if username exists
+    if cu.check_if_username_exists(data['username']):
+
+        # grabbing role
+        role = cu.get_user_role(data['username'])
+
+        # generating response
+        body = {"role": role}
+        return cu.create_response(200, cu.json.dumps(body))
+
+    else:
+        return cu.create_response(400, "Username does not exist")
