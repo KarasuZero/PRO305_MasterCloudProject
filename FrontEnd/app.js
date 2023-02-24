@@ -25,4 +25,8 @@ app.get('/register', (req, res) => {
     res.sendFile(path.join(__dirname, '/public/views/register.html'));
 });
 
+app.get('/home', (req, res) => {
+    res.sendFile(path.join(__dirname, '/public/views/catalog.html'));
+});
+
 

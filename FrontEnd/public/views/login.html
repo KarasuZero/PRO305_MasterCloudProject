@@ -17,7 +17,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Akshar:wght@500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="/css/style.css" />
     </head>
     <body>
         <section class="vh-100">
@@ -32,25 +32,25 @@
                   <div class="mx-auto align-items-center h-custom-6 px-50 ms-xl-4 mt-5 pt-5 pt-xl-50 mt-xl-n5"
                   style="width:370px;">
           
-                    <form style="width: 23rem;">
+                    <form style="width: 23rem;" id="loginForm">
           
                       <h3 class="fw-normal mb-3 pb-3" style="letter-spacing: 1px;">Log in</h3>
           
                       <div class="form-outline mb-4">
-                        <input type="email" id="form2Example18" class="form-control form-control-lg" />
-                        <label class="form-label" for="form2Example18">Email address</label>
+                        <input type="username" id="username" class="form-control form-control-lg" />
+                        <label class="form-label" for="username">Username</label>
                       </div>
           
                       <div class="form-outline mb-4">
-                        <input type="password" id="form2Example28" class="form-control form-control-lg" />
-                        <label class="form-label" for="form2Example28">Password</label>
+                        <input type="password" id="password" class="form-control form-control-lg" />
+                        <label class="form-label" for="password">Password</label>
                       </div>
           
                       <div class="pt-1 mb-4">
-                        <button class="btn btn-info btn-lg btn-block" type="button" style="background-color: rgb(249, 80, 80); outline-style: auto; outline-color: red;"">Login</button>
+                        <button id="loginButton" class="btn btn-info btn-lg btn-block" type="button" style="background-color: rgb(249, 80, 80); outline-style: auto; outline-color: red;">Login</button>
                       </div>
           
-                      <p class="small mb-5 pb-lg-2"><a class="text-muted" href="#!">Forgot password?</a></p>
+                      <!--<p class="small mb-5 pb-lg-2"><a class="text-muted" href="#!">Forgot password?</a></p>-->
                       <p>Don't have an account? <a href="http://localhost:3031/register" class="link-info">Register here</a></p>
           
                     </form>
@@ -66,4 +66,5 @@
             </div>
           </section>
     </body>
+    <script src="/javascript/login.js"></script>
 </HTML>
