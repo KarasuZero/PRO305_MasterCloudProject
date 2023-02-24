@@ -1,5 +1,5 @@
 {
-  "operation": "POST_Create_Store",
+  "operation": "PUT_Update_Store",
   "data": {
     "username": "owner_01",
     "password": "root",
@@ -12,6 +12,7 @@
     "phone": "1112223333",
     "email": "store@test.com",
     "website": "www.testStore.com",
-    "hours": "Test Store Hours"
+    "hours": "Test Store Hours",
+    "menu_list": []
   }
 }

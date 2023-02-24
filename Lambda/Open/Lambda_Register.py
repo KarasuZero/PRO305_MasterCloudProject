@@ -15,6 +15,10 @@ def lambda_handler(event, context):
         return post_register_user(data)
     elif operation == "POST_Register_Proprietor":
         return post_register_proprietor(data)
+    elif operation == "POST_GenTen_Users":
+        return post_gen_ten_users()
+    elif operation == "POST_validate_user":
+        return post_validate_user(data)
 
 
 def post_register_user(data):
@@ -55,7 +59,9 @@ def post_register_user(data):
 
         # generating response
         body = {"message": "User Created", "username": username, "password": password, "name": name}
-        # TODO send email content to message queue? and then let the email service handle it?
+
+        # sending to SQS
+        cu.sqs_produce_msg(email, username, password, name)
 
         return cu.create_response(200, cu.json.dumps(body))
 
@@ -109,6 +115,59 @@ def post_register_proprietor(data):
         # generating response
         body = {"message": "Proprietor Created", "username": username, "password": password, "name": name,
                 "phone": phone}
-        # TODO send email content to message queue? and then let the email service handle it?
+
+        # sending to SQS
+        cu.sqs_produce_msg(email, username, password, name)
 
         return cu.create_response(200, cu.json.dumps(body))
+
+def post_gen_ten_users():
+    user_list = cu.generate_ten_user()
+
+    # dynamodb stuff
+    dynamodb = cu.bt3.resource("dynamodb")
+    Registered_User_Table = dynamodb.Table('PRO305_Registered_User_Table')
+    User_Table = dynamodb.Table('PRO305_User_Table')
+
+    for user in user_list:
+
+        # check if username exists
+        if cu.check_if_username_exists(user['username']):
+            # generating response
+            return cu.create_response(400, "Username already exists")
+
+        else:
+
+            # inserting into Registered_User_Table
+            Registered_User_Table.put_item(Item={
+                "username": user['username'],
+                "role": "USER"})
+
+            # inserting into User_Table
+            User_Table.put_item(Item={
+                "username": user['username'],
+                "password": user['password'],
+                "name": user['name'],
+                "email": user['email'],
+                "Cart": []
+            })
+
+            # sending to SQS
+            cu.sqs_produce_msg(user['email'], user['username'], user['password'], user['name'])
+
+    # generating response
+    body = {"message": "Users Created", "users": user_list}
+    return cu.create_response(200, cu.json.dumps(body))
+
+
+def post_validate_user(data):
+
+    # check if username exists
+    if cu.check_if_username_exists(data['username']):
+
+        # check if password is correct
+        if cu.check_is_user(data['username'], data['password']):
+            return cu.create_response(200, "User Validated")
+
+        else:
+            return cu.create_response(400, "Password is incorrect")

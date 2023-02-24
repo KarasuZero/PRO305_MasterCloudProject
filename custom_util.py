@@ -254,19 +254,61 @@ def check_if_item_in_cart(username, password, item_id):
         print(e)
         return False
 
+def sqs_produce_msg(email, username, password, name):
+    # Create an SQS client
+    sqs = bt3.client('sqs')
+
+    # Specify the URL of the SQS queue
+    queue_url = 'https://sqs.us-west-2.amazonaws.com/408386168496/PRO305_SQS_Email'
+
+    print("Constructing message")
+    msg = "Hi " + name + ",\n\n" + "Welcome to the Fast-Lane Portal! You can now log in to your account and add " \
+                                   "properties to your account.\n\n" + "(Username- " + username + "\nPassword-" \
+          + password + ")\n\n" + "Thanks,\nFast-Lane Team"
+
+    msg_body = email + ":" + "Welcome to the Fast-Lane Portal" + ":" + msg
+
+    # Define the message to send
+    message = {
+        'MessageBody': msg_body,
+        'DelaySeconds': 0
+    }
+
+    # Send the message to the SQS queue
+    res = sqs.send_message(
+        QueueUrl=queue_url,
+        MessageBody=message['MessageBody'],
+        DelaySeconds=message['DelaySeconds']
+    )
+
+    print("Sent to SQS")
+    print(f"Sent message with ID: {res['MessageId']}")
+
+
+def generate_ten_user():
+    user_list = []
+
+
+
+    for i in range(10):
+        user_id = keyGen()
+        user = {
+            "username": "user_" + user_id,
+            "password": "root",
+            "name": "user_" + user_id,
+            "email": "user_" + user_id + "@email.com"
+        }
+
+        user_list.append(user)
+
+    return user_list
+
 
 # json data to be sent to lambda
 data = {
-  "operation": "PATCH_Modify_Cart",
-  "data":{
-    "username": "user_01",
-    "password": "user_01_pass",
-    "menu_id": "570a76f6-b324-4b74-91d0-4bdfe952d119",
-    "item_id": "1e60aea5-c71d-49ee-ac8a-97fb6d1cee69",
-    "quantity": "-3"
-  }
+  "operation": "POST_GenTen_Users",
+  "data": {}
 }
-
 # data encoded using base64
 print("encoded data:\n")
 print(b64Encode(json.dumps(data)))
@@ -274,3 +316,5 @@ print(b64Encode(json.dumps(data)))
 # data decoded using base64 ( debug )
 # print("decoded data:\n")user
 # print(b64Decode(b64Encode(json.dumps(data))))
+
+# print(generate_ten_user())
