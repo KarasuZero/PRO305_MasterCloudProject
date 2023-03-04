@@ -16,6 +16,7 @@ def b64Decode(body_element):
 def create_response(statusCode, body):
     return {
         'statusCode': statusCode,
+        #ENABLE CORS
         'body': body
     }
 
@@ -173,7 +174,7 @@ dataDeleteMenuItem = {
 
 # print(b64Encode(json.dumps(dataDeleteMenu)))
 
-# print(b64Encode(json.dumps(dataMenuGet)))
+print(b64Encode(json.dumps(dataMenuGet)))
 
 # print(b64Encode(json.dumps(dataCreateMenu2)))
 
@@ -181,6 +182,6 @@ dataDeleteMenuItem = {
 
 # print(b64Encode(json.dumps(dataGetMenuItem)))
 
-print(b64Encode(json.dumps(dataAddMenuItem)))
+#print(b64Encode(json.dumps(dataAddMenuItem)))
 
 #print(b64Encode(json.dumps(dataDeleteMenuItem)))

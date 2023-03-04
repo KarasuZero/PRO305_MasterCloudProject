@@ -6,3 +6,13 @@ cd cors-anywhere/
 npm install
 heroku create
 git push heroku master
+
+
+//cors proxy 
+npm i local-cors-proxy
+
+
+
+lcp --proxyUrl https://bt594c8e2e.execute-api.us-west-2.amazonaws.com
+
+lcp --proxyUrl https://2nrymwm4bd.execute-api.us-west-2.amazonaws.com/Dev

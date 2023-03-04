@@ -24,7 +24,7 @@ from uuid import uuid4
 
 def lambda_handler(event, context):
     
-    if event['body'] == "":
+    if event['body'] == "" or event["body"] is None:
         operation = event['queryStringParameters']['operation']
         
         if operation == "GET_Get_Menu_Item":  # works
