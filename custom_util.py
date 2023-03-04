@@ -284,6 +284,44 @@ def sqs_produce_msg(email, username, password, name):
     print("Sent to SQS")
     print(f"Sent message with ID: {res['MessageId']}")
 
+def send_cart(email, username, password, name):
+    # Create an SQS client
+    sqs = bt3.client('sqs')
+    dynamodb = bt3.resource('dynamodb')
+    User_Table = dynamodb.Table("PRO305_User_Table")
+
+    # Specify the URL of the SQS queue
+    queue_url = 'https://sqs.us-west-2.amazonaws.com/408386168496/PRO305_SQS_Email'
+
+    # get cart items
+    response = User_Table.get_item(Key={'username': username, "password": password})
+
+    if 'Item' in response:
+        item_list = response['Item']['Cart']
+        msg = "Hi " + name + ",\n\n" + "As per your request, we have sent you the items in your cart.\n\n" \
+                                       "Thanks,\nFast-Lane Team"
+        for item in item_list:
+            msg = msg + "\n" + item['item_name'] + " - " + str(item['item_price'])
+
+    msg_body = email + ":" + "Your Cart Items" + ":" + msg
+
+    # Define the message to send
+    message = {
+        'MessageBody': msg_body,
+        'DelaySeconds': 0
+    }
+
+    # Send the message to the SQS queue
+    res = sqs.send_message(
+        QueueUrl=queue_url,
+        MessageBody=message['MessageBody'],
+        DelaySeconds=message['DelaySeconds']
+    )
+
+    print("Sent to SQS")
+    print(f"Sent message with ID: {res['MessageId']}")
+
+
 def return_user_role(username):
 
     # dynamodb stuff
@@ -318,10 +356,7 @@ def generate_ten_user():
 
 
 # json data to be sent to lambda
-data = {
-  "operation": "POST_GenTen_Users",
-  "data": {}
-}
+data = "owner01"
 # data encoded using base64
 print("encoded data:\n")
 print(b64Encode(json.dumps(data)))
