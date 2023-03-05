@@ -60,7 +60,6 @@ def get_menu(menu_id):
     Menu_Table = dynamodb.Table('PRO305_Menu_Table')
 
     # grabbing data
-    
 
     # find menu by id
     menu = Menu_Table.get_item(Key={'menu_id': menu_id})

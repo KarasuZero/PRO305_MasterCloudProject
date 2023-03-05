@@ -14,8 +14,14 @@ def b64Decode(body_element):
 
 
 def create_response(statusCode, body):
+    headers = {
+        'Access-Control-Allow-Origin': 'http://localhost:3031/',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE',
+        'Access-Control-Allow-Headers': 'Content-Type'
+    }
     return {
         'statusCode': statusCode,
+        'headers': headers,
         'body': body
     }
 
@@ -206,6 +212,7 @@ def check_if_menu_in_store(menu_id, store_name):
         print(e)
         return False
 
+
 def check_if_item_in_menu(menu_id, item_id):
     # dynamodb stuff
     dynamodb = bt3.resource('dynamodb')
@@ -230,6 +237,7 @@ def check_if_item_in_menu(menu_id, item_id):
         print(e)
         return False
 
+
 def check_if_item_in_cart(username, password, item_id):
     # dynamodb stuff
     dynamodb = bt3.resource('dynamodb')
@@ -253,6 +261,7 @@ def check_if_item_in_cart(username, password, item_id):
         print("error: ")
         print(e)
         return False
+
 
 def sqs_produce_msg(email, username, password, name):
     # Create an SQS client
@@ -283,6 +292,7 @@ def sqs_produce_msg(email, username, password, name):
 
     print("Sent to SQS")
     print(f"Sent message with ID: {res['MessageId']}")
+
 
 def send_cart(email, username, password, name):
     # Create an SQS client
@@ -323,10 +333,9 @@ def send_cart(email, username, password, name):
 
 
 def return_user_role(username):
-
     # dynamodb stuff
     dynamodb = bt3.resource('dynamodb')
-    Register_Table = dynamodb.Table("PRO305_Register_Table")
+    Register_Table = dynamodb.Table("PRO305_Registered_User_Table")
 
     response = Register_Table.get_item(Key={'username': username})
     if 'Item' in response:
@@ -335,11 +344,8 @@ def return_user_role(username):
         return False
 
 
-
 def generate_ten_user():
     user_list = []
-
-
 
     for i in range(10):
         user_id = keyGen()
@@ -356,7 +362,12 @@ def generate_ten_user():
 
 
 # json data to be sent to lambda
-data = "owner01"
+data = {
+    "operation": "POST_Return_User_Role",
+    "data": {
+        "username": "user_01"
+    }
+}
 # data encoded using base64
 print("encoded data:\n")
 print(b64Encode(json.dumps(data)))

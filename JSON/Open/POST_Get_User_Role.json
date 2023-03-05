@@ -1,0 +1,6 @@
+{
+    "operation": "POST_Return_User_Role",
+    "data": {
+    "username": "user_01"
+    }
+}

@@ -180,7 +180,7 @@ def post_return_user_role(data):
     if cu.check_if_username_exists(data['username']):
 
         # grabbing role
-        role = cu.get_user_role(data['username'])
+        role = cu.return_user_role(data['username'])
 
         # generating response
         body = {"role": role}
