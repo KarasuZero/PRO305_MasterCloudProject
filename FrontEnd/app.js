@@ -33,4 +33,24 @@ app.get('/menu', (req, res) => {
     res.sendFile(path.join(__dirname, '/public/views/storemenu.html'));
 });
 
+app.get('/cart', (req, res) => {
+    res.sendFile(path.join(__dirname, '/public/views/cart.html'));
+});
+
+app.get('/manage', (req, res) => {
+    res.sendFile(path.join(__dirname, '/public/views/manage.html'));
+});
+
+app.get('/manage/editResturant', (req, res) => {
+    res.sendFile(path.join(__dirname, '/public/views/editstore.html'));
+});
+
+app.get('/home/resturantMenu', (req, res) => {
+    res.sendFile(path.join(__dirname, '/public/views/storemenu.html'));
+});
+
+
+
+
+
 
