@@ -24,20 +24,20 @@
 	<h4 class="card-title mt-2">Sign up</h4>
 </header>
 <article class="card-body">
-<form>
+<form id="registerForm">
 	<div class="form-row">
 		<div class="col form-group">
 			<label>Name </label>   
-		  	<input type="text" class="form-control" placeholder="">
+		  	<input id="txtName" type="text" class="form-control" placeholder="" required>
 		</div> <!-- form-group end.// -->
 		<div class="col form-group">
 			<label>Username</label>
-		  	<input type="text" class="form-control" placeholder=" ">
+		  	<input id="txtUsername" type="text" class="form-control" placeholder=" " required>
 		</div> <!-- form-group end.// -->
 	</div> <!-- form-row end.// -->
 	<div class="form-group">
 		<label>Email address</label>
-		<input type="email" class="form-control" placeholder="">
+		<input  id="txtEmail" type="email" class="form-control" placeholder="" required>
 		<small class="form-text text-muted">We'll never share your email with anyone else.</small>
 	</div> <!-- form-group end.// -->
 	<div class="form-group">
@@ -53,15 +53,15 @@
 	<div class="form-row">
 		<div class="form-group col-md-6" style="display: none;" id="phoneNumber">
 		  <label>Phone Number</label>
-		  <input type="text" class="form-control">
+		  <input id="txtNumber" type="text" class="form-control" placeholder="###-###-####">
 		</div> <!-- form-group end.// -->
 	</div> <!-- form-row.// -->
 	<div class="form-group">
 		<label>Create password</label>
-	    <input class="form-control" type="password">
+	    <input  id="txtPassword" class="form-control" type="password" required>
 	</div> <!-- form-group end.// -->  
     <div class="form-group">
-        <button type="submit" class="btn btn-primary btn-block" style="background-color: rgb(249, 80, 80); outline-style: auto; outline-color: red;"> Register  </button>
+        <button id="buttonRegister" type="submit" class="btn btn-primary btn-block" style="background-color: rgb(249, 80, 80); outline-style: auto; outline-color: red;"> Register  </button>
     </div> <!-- form-group// -->      
     <small class="text-muted">By clicking the 'Sign Up' button, you confirm that you accept our <br> Terms of use and Privacy Policy.</small>                                          
 </form>
@@ -79,3 +79,4 @@
 <br><br>
 
 <script src="/javascript/register.js"></script>
+
