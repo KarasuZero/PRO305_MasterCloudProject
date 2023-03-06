@@ -6,8 +6,57 @@ window.onload = function () {
     getMenu();
 };
 
+async function EmptyCart() {
+let userbody = {
+        "operation": "POST_Clear_Cart",
+        "data": {
+            "username": sessionStorage.getItem("username"),
+            "password": sessionStorage.getItem("password")
+        }
+
+}
+let bodyJSON = JSON.stringify(userbody);
+let body64 = btoa(bodyJSON);
+console.log(body64);
+await fetch("http://localhost:8010/proxy/user", {
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json",
+        "authorizationToken": sessionStorage.getItem("usernametoken")
+
+}
+}).then(function (response) {
+    if (response.status == 200) {
+        console.log("cart cleared");
+        console.log(response);
+        alert("Cart Cleared");
+    } else {
+        console.log("failed to clear cart");
+        console.log(response);
+    }
+}).catch(function (error) {
+    console.log(error);
+});
+}
+
 
 async function addToCart(item_id) {
+    //only add to cart if there isnt an item from another restaurant in the cart
+var isSameStore = false;
+    if (sessionStorage.getItem("menu_id") == sessionStorage.getItem("cart_menu_id")) {
+        isSameStore = true;
+    }
+    else if (sessionStorage.getItem("cart_menu_id") == null) {
+        isSameStore = true;
+    }
+    else {
+        isSameStore = false;
+    }
+    if (isSameStore = false) {
+        alert("You already have an item from another store in your cart.  We will empty your cart and add this item.");
+        //empty cart
+        EmptyCart();
+    }
     let cartBody = {
         "operation": "PATCH_Modify_Cart",
         "data": {
@@ -30,6 +79,8 @@ async function addToCart(item_id) {
         body: body64
     }).then(function (response) {
         if (response.status == 200) {
+            //Save menu_id to cart_menu_id
+            sessionStorage.setItem("cart_menu_id", sessionStorage.getItem("menu_id"));
             console.log("added to cart");
             console.log(response);
             alert("Added to cart");
