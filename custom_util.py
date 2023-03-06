@@ -361,6 +361,36 @@ def generate_ten_user():
     return user_list
 
 
+def return_np_by_id(item_id, menu_id):
+    # dynamodb stuff
+    dynamodb = bt3.resource('dynamodb')
+    Menu_Table = dynamodb.Table("PRO305_Menu_Table")
+
+    # check if menu exist in table
+    try:
+        response = Menu_Table.get_item(Key={'menu_id': menu_id})
+        if 'Item' in response:
+            item_list = response['Item']['items']  # list of menu items
+            for item in item_list:
+                if item['item_id'] == item_id:
+
+                    body = {
+                        "item_name": item['price'],
+                        "item_price": item['name']
+                    }
+
+                    return body
+
+                else:
+                    return False
+        else:
+            return False
+
+    except Exception as e:
+        print("error: ")
+        print(e)
+        return False
+
 # json data to be sent to lambda
 data = {
     "operation": "POST_Return_User_Role",

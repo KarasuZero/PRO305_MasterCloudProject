@@ -28,7 +28,7 @@ def get_all_store():
     items = response['Items']
 
     # generate response
-    return cu.create_response(200, items)
+    return cu.create_response(200, cu.json.dumps(items))
 
 def get_store(store_name):
     # dynamoDB stuff
@@ -60,7 +60,7 @@ def get_menu_by_id(menu_id):
         item = response['Item']
 
         # generate response
-        return cu.create_response(200, item)
+        return cu.create_response(200, cu.json.dumps(item))
 
     else:
         # generate response

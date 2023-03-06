@@ -15,6 +15,42 @@ def lambda_handler(event, context):
     elif operation == "POST_Checkout":
         return post_checkout(data)
 
+    elif operation == "POST_Clear_Cart":
+        return post_clear_cart(data)
+
+
+def post_clear_cart(data):
+    username = data['username']
+    password = data['password']
+
+    # dynamoDB stuff
+    DynamoDB = cu.bt3.resource("dynamodb")
+    User_Table = DynamoDB.Table("PRO305_User_Table")
+
+    # check if user exists
+    if cu.check_if_username_exists(username):
+
+        # check password
+        if cu.check_is_user(username, password):
+            # get item
+            response = User_Table.get_item(Key={'username': username, 'password': password})
+            item = response['Item']
+
+            # update item
+            item['Cart'] = []
+            User_Table.put_item(Item=item)
+
+            # generate response
+            return cu.create_response(200, "Cart cleared")
+
+        else:
+            # generate response
+            return cu.create_response(400, "Password is incorrect")
+
+    else:
+        # generate response
+        return cu.create_response(400, "User does not exist")
+
 def post_get_cart(data):
     username = data['username']
     password = data['password']
@@ -66,6 +102,9 @@ def post_checkout(data):
 
             # send cart to sqs
             cu.send_cart(username, password, email, name)
+
+            # clear cart
+            post_clear_cart(data)
 
             # generate response
             return cu.create_response(200, "Order placed")
