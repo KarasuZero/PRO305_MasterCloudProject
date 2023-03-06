@@ -169,12 +169,30 @@ dataDeleteMenuItem = {
     }
 }
 
+createStore = {
+    "operation": "POST_Create_Store",
+    "data": {
+    "username": "owner_01",
+    "password": "root",
+    "store_name": "McDonalds",
+    "desc": "Fast Food Restaurant",
+    "loc": "123 Test St",
+    "city": "Test City",
+    "st": "UT",
+    "zipcode": "84102",
+    "phone": "1112223333",
+    "email": "mcdonalds@test.com",
+    "website": "www.mcdonalds.com",
+    "hours": "8am-10pm",
+  }
+}
+
 
 # print(b64Encode(json.dumps(dataCreateMenu)))
 
 # print(b64Encode(json.dumps(dataDeleteMenu)))
 
-print(b64Encode(json.dumps(dataMenuGet)))
+#print(b64Encode(json.dumps(dataMenuGet)))
 
 # print(b64Encode(json.dumps(dataCreateMenu2)))
 
@@ -185,3 +203,5 @@ print(b64Encode(json.dumps(dataMenuGet)))
 #print(b64Encode(json.dumps(dataAddMenuItem)))
 
 #print(b64Encode(json.dumps(dataDeleteMenuItem)))
+
+print(b64Encode(json.dumps(createStore)))
