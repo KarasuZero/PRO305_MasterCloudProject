@@ -1,7 +1,10 @@
 var manageButton = document.getElementById("manageButton");
 var resturauntListDoc = document.getElementById("restaurantList");
 var resturantSection = document.getElementById("restaurants");
-
+// go to cart page
+function goToCartPage() {
+    window.location.href = "http://localhost:3031/cart";
+}
 //Only show manage button if user role is "Proprietor"
 window.onload = function () {
     if (sessionStorage.getItem("role") == "PROPRIETOR") {

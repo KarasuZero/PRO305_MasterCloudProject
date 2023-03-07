@@ -1,26 +1,34 @@
-var displayCart = getElementById("displayCart");
+var displayCartDiv = document.getElementById("displayCart");
+var displayCartSection = document.getElementById("displayCartSection");
+
+// go to cart page
 
 window.onload = function () {
     displayCart();
 };
+
+function goToCartPage() {
+    window.location.href = "http://localhost:3031/cart";
+}
+
 //function to display cart 
 let cartList = []; //array to hold the list of menu items
 async function displayCart() {
-    user ={
+   let user ={
         "operation": "POST_Get_Cart",
         "data": {
-            "username": sessionStorage.getItem("username"),
-            "password": sessionStorage.getItem("password"),
+            "username": sessionStorage.getItem("usernametoken"),
+            "password": sessionStorage.getItem("password")
         }
     }
     let bodyJSON = JSON.stringify(user);
     let body64 = btoa(bodyJSON);
     console.log(body64);
-    await fetch("http://localhost:8010/proxy/user", {
+    await fetch("http://localhost:8010/proxy/users", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            "authToken": sessionStorage.getItem("usernametoken")
+            "authorizationToken": sessionStorage.getItem("usernametoken")
         },
         body: body64
     }).then(function (response) {
@@ -32,17 +40,74 @@ async function displayCart() {
                 cartList = data.item;
                 console.log(cartList);
                 //display cart 
-                for (let i = 0; i < cartList.length; i++) {
-                }
+                appendCart(cartList);
 
                
             });
         } else {
-            console.log("failed to get user type");
+            console.log("failed to get cart");
             console.log(response);
         }
     }).catch(function (error) {
         console.log(error);
     }
     );
+}
+
+ function appendCart(cartlist) {
+    console.log("appending cart");
+    cartList.forEach(function (item) {
+        var cartItem = document.createElement("div");
+        cartItem.className = "cartItem";
+        cartItem.id = item.item_id;
+        cartItem.innerHTML = `
+        <div class="cartItemName">${item.item_name}</div>
+        <div class="cartItemPrice">${item.item_price}</div>
+        <div class="cartItemQuantity">${item.quantity}</div>
+        <div class="cartItemTotal">${item.total}</div>
+        <div class="cartItemDelete">Delete</div>
+        `;
+        displayCartSection.appendChild(cartItem);
+
+        //add event listener to delete button
+        var deleteButton = cartItem.getElementsByClassName("cartItemDelete")[0];
+        deleteButton.addEventListener("click", function () {
+            deleteItem(item);
+        });
+    });
+ }
+
+ deleteItem = async (item) => {
+    //modify the cart
+    let cartBody = {
+        "operation": "PATCH_Modify_Cart",
+        "data": {
+            "username": sessionStorage.getItem("usernametoken"),
+            "password": sessionStorage.getItem("password"),
+            "menu_id": item.menu_id,
+            "item_id": item.item_id,
+            "quantity": "-1"
+        } 
+ }
+    let bodyJSON = JSON.stringify(cartBody);
+    let body64 = btoa(bodyJSON);
+    console.log(body64);
+    await fetch("http://localhost:8010/proxy/users", {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json",
+            "authorizationToken": sessionStorage.getItem("usernametoken")
+        },
+        body: body64
+    }).then(function (response) {
+        if (response.status == 200) {
+            //Save menu_id to cart_menu_id
+            displayCart();
+            console.log(response);
+            alert("removed from cart");
+        } else {
+        }
+    }).catch(function (error) {
+        console.log(error);
+    });
 }

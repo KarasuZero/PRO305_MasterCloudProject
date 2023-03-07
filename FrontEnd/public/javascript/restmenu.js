@@ -1,6 +1,10 @@
 var menuDisplay = document.getElementById("displayMenu");
 var menuDsiplaySection = document.getElementById("displayMenuSection");
-
+// go to cart page
+function goToCartPage() {
+    console.log("go to cart page");
+    window.location.href = "http://localhost:3031/cart";
+}
 //Call the API to get the menu on window load
 window.onload = function () {
     getMenu();
@@ -40,7 +44,7 @@ await fetch("http://localhost:8010/proxy/user", {
 }
 
 
-async function addToCart(item_id) {
+async function addToCart(item) {
     //only add to cart if there isnt an item from another restaurant in the cart
 var isSameStore = false;
     if (sessionStorage.getItem("menu_id") == sessionStorage.getItem("cart_menu_id")) {
@@ -57,24 +61,25 @@ var isSameStore = false;
         //empty cart
         EmptyCart();
     }
+  
     let cartBody = {
         "operation": "PATCH_Modify_Cart",
         "data": {
-            "username": sessionStorage.getItem("username"),
+            "username": sessionStorage.getItem("usernametoken"),
             "password": sessionStorage.getItem("password"),
             "menu_id": sessionStorage.getItem("menu_id"),
-            "item_id": item_id,
-            "quantity": 1
+            "item_id": item.item_id,
+            "quantity": "1"
         }
     }
     let bodyJSON = JSON.stringify(cartBody);
     let body64 = btoa(bodyJSON);
     console.log(body64);
-    await fetch("http://localhost:8010/proxy/user", {
+    await fetch("http://localhost:8010/proxy/users", {
         method: "PATCH",
         headers: {
             "Content-Type": "application/json",
-            "authToken": sessionStorage.getItem("usernametoken")
+            "authorizationToken": sessionStorage.getItem("usernametoken"),
         },
         body: body64
     }).then(function (response) {
@@ -147,21 +152,29 @@ function appendMenu(menuList) {
     console.log("Attempting to append menu");
     menuList.forEach(function (item) {
         console.log(item);
-        //display name , description, price, and add to cart button
-        menuDisplay.innerHTML += `
+        const menuItem = document.createElement("div");
+        menuItem.classList.add("card");
+        menuItem.style.width = "18rem";
+        menuItem.innerHTML += `
         <div class="card" style="width: 18rem;">
         <div class="card-body">
 
             <h5 class="card-title">${item.name}</h5>
             <h6 class="card-subtitle mb-2 text-muted">${item.price}</h6>
             <p class="card-text">${item.description}</p>
-            <a href="#" class="card-link" onclick="addToCart('${item.item_id}')">Add to Cart</a>
+            <button style="background-color: rgb(249, 80, 80); outline-style: auto; outline-color: red; class="btn btn-primary btn-lg btn-block view-menu" id="${item.item_id}">Add to Cart</a>
         </div>
     </div>
             `;
        
 
-            menuDsiplaySection.appendChild(menuDisplay);
+            menuDsiplaySection.appendChild(menuItem);
+            //create event listener that sends the item to the add to cart function
+           const addToCartBtn = document.getElementById(item.item_id);
+            addToCartBtn.addEventListener("click", function () {
+                console.log("add to cart button clicked");
+                addToCart(item);
+            });
     });
 }
 
