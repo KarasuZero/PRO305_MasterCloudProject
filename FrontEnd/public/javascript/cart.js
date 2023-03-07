@@ -106,7 +106,7 @@ async function displayCart() {
             console.log(response);
             response.json().then(function (data) {
                 console.log(data);
-                cartList = data.item;
+                cartList = data;
                 console.log(cartList);
                 //display cart 
                 appendCart(cartList);
@@ -125,28 +125,58 @@ async function displayCart() {
 
  function appendCart(cartlist) {
     console.log("appending cart");
+    let total = 0.00;
     cartList.forEach(function (item) {
         var cartItem = document.createElement("div");
         cartItem.className = "cartItem";
         cartItem.id = item.item_id;
         cartItem.innerHTML = `
-        <div class="cartItemName">${item.item_name}</div>
-        <div class="cartItemPrice">${item.item_price}</div>
-        <div class="cartItemQuantity">${item.quantity}</div>
-        <div class="cartItemTotal">${item.total}</div>
-        <div class="cartItemDelete">Delete</div>
+        <div class="card" style="width: 18rem;">
+        <div class="card-body">
+        <h3 class="card-title">${item.name}</h3>
+        <h6 class="card-subtitle mb-2 text-muted">${item.price}</h6>
+        <p class="card-text">${item.quantity}</p>
+        <button style="background-color: rgb(249, 80, 80); outline-style: auto; outline-color: red; class="btn btn-primary btn-lg btn-block view-menu" id="${item.item_id}">Delete</button>
+        </div>
+        </div>
         `;
         displayCartSection.appendChild(cartItem);
-
+        //add price string to total
+        total += parseFloat(item.price);
         //add event listener to delete button
-        var deleteButton = cartItem.getElementsByClassName("cartItemDelete")[0];
+        const deleteButton = document.getElementById(item.item_id);
         deleteButton.addEventListener("click", function () {
+            console.log("delete button clicked");
             deleteItem(item);
         });
     });
+    //display total
+    //display total to 2 decimal places
+    total = total.toFixed(2);
+    var totalDiv = document.createElement("div");
+    totalDiv.className = "totalDiv";
+    totalDiv.innerHTML = `
+    <div class="card" style="width: 18rem;">
+    <div class="card-body">
+    <h3 class="card-title">Total</h3>
+    <h6 class="card-subtitle mb-2 text-muted">$${total}</h6>
+    </div>
+    </div>
+    `;
+    displayCartSection.appendChild(totalDiv);
+
+    //add a clear cart button 
+    var clearCartButton = document.createElement("button");
+    clearCartButton.className = "clearCartButton";
+    clearCartButton.innerHTML = "Clear Cart";
+    displayCartSection.appendChild(clearCartButton);
+    clearCartButton.addEventListener("click", function () {
+        EmptyCart();
+    });
+    
  }
 
- deleteItem = async (item) => {
+async function deleteItem (item)  {
     //modify the cart
     let cartBody = {
         "operation": "PATCH_Modify_Cart",
