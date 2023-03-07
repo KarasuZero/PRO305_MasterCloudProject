@@ -49,7 +49,9 @@ app.get('/home/resturantMenu', (req, res) => {
     res.sendFile(path.join(__dirname, '/public/views/storemenu.html'));
 });
 
-
+app.get('/checkout', (req, res) => {
+    res.sendFile(path.join(__dirname, '/public/views/checkout.html'));
+});
 
 
 

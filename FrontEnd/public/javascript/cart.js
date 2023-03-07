@@ -11,6 +11,75 @@ function goToCartPage() {
     window.location.href = "http://localhost:3031/cart";
 }
 
+
+async function checkout(){
+    console.log("checkout");
+    let user = {
+        "operation": "POST_Checkout",
+        "data": {
+            "username": sessionStorage.getItem("usernametoken"),
+            "password": sessionStorage.getItem("password")
+        }
+    }
+    let bodyJSON = JSON.stringify(user);
+    let body64 = btoa(bodyJSON);
+    console.log(body64);
+    await fetch("http://localhost:8010/proxy/users", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "authorizationToken": sessionStorage.getItem("usernametoken")
+        },
+        body: body64
+    }).then(function (response) {
+        if (response.status == 200) {
+            console.log("checked out");
+            console.log(response);
+            alert("Your order has been placed");
+            EmptyCart();
+            window.location.href = "http://localhost:3031/checkout";
+        } else {
+            console.log("failed to checkout");
+            console.log(response);
+        }
+    }).catch(function (error) {
+        console.log(error);
+    });
+}
+
+async function EmptyCart() {
+    console.log("empty cart");
+    let user = {
+        "operation": "POST_Clear_Cart",
+        "data": {
+            "username": sessionStorage.getItem("usernametoken"),
+            "password": sessionStorage.getItem("password")
+        }
+    }
+    let bodyJSON = JSON.stringify(user);
+    let body64 = btoa(bodyJSON);
+    console.log(body64);
+    await fetch("http://localhost:8010/proxy/users", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "authorizationToken": sessionStorage.getItem("usernametoken")
+        },
+        body: body64
+    }).then(function (response) {
+        if (response.status == 200) {
+            console.log("cart cleared");
+            console.log(response);
+            
+        } else {
+            console.log("failed to clear cart");
+            console.log(response);
+        }
+    }).catch(function (error) {
+        console.log(error);
+    });
+}
+
 //function to display cart 
 let cartList = []; //array to hold the list of menu items
 async function displayCart() {
