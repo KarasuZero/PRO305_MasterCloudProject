@@ -29,9 +29,9 @@ app.get('/home', (req, res) => {
     res.sendFile(path.join(__dirname, '/public/views/catalog.html'));
 });
 
-app.get('/menu', (req, res) => {
-    res.sendFile(path.join(__dirname, '/public/views/storemenu.html'));
-});
+// app.get('/menu', (req, res) => {
+//     res.sendFile(path.join(__dirname, '/public/views/storemenu.html'));
+// });
 
 app.get('/cart', (req, res) => {
     res.sendFile(path.join(__dirname, '/public/views/cart.html'));

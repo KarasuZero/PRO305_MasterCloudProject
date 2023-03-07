@@ -55,6 +55,7 @@ loginButton.addEventListener("click", async () => {
         //save base64 encoded string to session storage
         //string =  + ":" + password.value.toString();
         sessionStorage.setItem("usernametoken", username.value.toString());
+        sessionStorage.setItem("password", password.value.toString());
         //call function with http request to discover if user is a customer or store onwer
         getUserType();
 

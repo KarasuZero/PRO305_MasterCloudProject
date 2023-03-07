@@ -20,7 +20,7 @@ def get_menu(menu_id):
     if menu is None:
         return cu.create_response(400, "Menu Not Found")
     # generate response
-    body = {"message": "Menu Found", "data": menu}
+    body = menu['Item']
 
     return cu.create_response(200, cu.json.dumps(body))
 
@@ -37,7 +37,7 @@ def get_menu_item(menu_id, item_id):
     # find item in menu
     for item in menu['items']:
         if item['item_id'] == item_id:
-            body = {"message": "Menu Item Found", "data": item}
+            body = item['Item']
             return cu.create_response(200, cu.json.dumps(body))
 
     return cu.create_response(400, "Menu Item Not Found")
