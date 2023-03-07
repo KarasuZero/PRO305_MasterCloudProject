@@ -7,7 +7,7 @@ Registered_User_Table = dynamodb.Table("PRO305_Registered_User_Table")
 
 def lambda_handler(event, context):
     # authorizer
-    authorizationToken = event['authToken']
+    authorizationToken = event['authorizationToken']
     print("authorizationToken: ", authorizationToken)
 
 

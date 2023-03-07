@@ -21,21 +21,29 @@ def patch_modify_cart(data):
     User_Table = DynamoDB.Table("PRO305_User_Table")
 
     # check if user exists
+    print("Checking if user exists: ", username + "\n")
     if cu.check_if_username_exists(username):
 
+        # check if user is valid
+        print("Checking if user is valid: ", username + "\n")
         if cu.check_is_user(username, password):
-            response = User_Table.get_item(Key={'username': username, 'password': password})
-            item = response['Item']
-
             # check if item exist
             menu_id = data['menu_id']
             item_id = data['item_id']
-            if cu.return_np_by_id(menu_id, item_id):
-                item = cu.return_np_by_id(menu_id, item_id)
-                name = item['name']
-                price = item['price']
+
+            if cu.return_np_by_id(item_id, menu_id):
+                item = cu.return_np_by_id(item_id, menu_id)
+
+                print("Item: ", item)
+
+                name = item[0]
+                price = item[1]
+
+                print("Name: ", name)
+                print("Price : ", price)
 
                 # check if item is in cart
+                print("Checking if item is in cart: ", data['item_id'] + "\n")
                 if not cu.check_if_item_in_cart(username, password, data['item_id']):
                     if int(data['quantity']) > 0:
                         item = {
@@ -56,8 +64,8 @@ def patch_modify_cart(data):
                         )
 
                 else:
-
-                    temp_list = item['Cart']
+                    cart = User_Table.get_item(Key={'username': username, 'password': password})['Item']['Cart']
+                    temp_list = cart
                     for product in temp_list:
                         if product['item_id'] == data['item_id']:
 
@@ -82,8 +90,7 @@ def patch_modify_cart(data):
                 item = response['Item']
                 cart = item['Cart']
 
-                body = {"Cart": cart, "message": "Item quantity updated"}
-                return cu.create_response(200, body)
+                return cu.create_response(200, cu.json.dumps(cart))
 
             else:
                 # generate response

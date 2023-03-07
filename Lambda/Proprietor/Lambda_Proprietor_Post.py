@@ -43,9 +43,9 @@ def post_create_store(data):
 
                     # grabbing attributes
                     des = data['description']
-                    loc = data['location']
+                    loc = data['loc']
                     city = data['city']
-                    state = data['state']
+                    state = data['st']
                     zipcode = data['zipcode']
                     phone = data['phone']
                     email = data['email']

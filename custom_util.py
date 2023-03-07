@@ -366,25 +366,28 @@ def return_np_by_id(item_id, menu_id):
     dynamodb = bt3.resource('dynamodb')
     Menu_Table = dynamodb.Table("PRO305_Menu_Table")
 
-    # check if menu exist in table
     try:
-        response = Menu_Table.get_item(Key={'menu_id': menu_id})
-        if 'Item' in response:
-            item_list = response['Item']['items']  # list of menu items
-            for item in item_list:
-                if item['item_id'] == item_id:
+        response = Menu_Table.scan()
 
-                    body = {
-                        "item_name": item['price'],
-                        "item_price": item['name']
-                    }
+        for menu in response['Items']:
+            print("Menu: ")
+            print(menu)
+            print("\n")
 
-                    return body
+            print("Menu ID: " + menu['menu_id'] + "\n")
+            print("Target ID: " + menu_id + "\n")
 
-                else:
-                    return False
-        else:
-            return False
+            if menu['menu_id'] == menu_id:
+                print("Menu found: " + menu_id + "\n")
+                print("Searching for item: " + item_id + "\n")
+
+                for item in menu['items']:
+                    print("Item: ")
+                    print(item)
+                    print("\n")
+                    if item['item_id'] == item_id:
+                        return item['name'], item['price']
+        return False
 
     except Exception as e:
         print("error: ")
@@ -393,10 +396,14 @@ def return_np_by_id(item_id, menu_id):
 
 # json data to be sent to lambda
 data = {
-    "operation": "POST_Return_User_Role",
-    "data": {
-        "username": "user_01"
-    }
+  "operation": "PATCH_Modify_Cart",
+  "data": {
+    "username": "user_01",
+    "password": "user_01_pass",
+    "menu_id": "570a76f6-b324-4b74-91d0-4bdfe952d119",
+    "item_id": "1e60aea5-c71d-49ee-ac8a-97fb6d1cee69",
+    "quantity": "2"
+  }
 }
 # data encoded using base64
 print("encoded data:\n")
